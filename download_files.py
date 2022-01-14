@@ -4,6 +4,7 @@ import PySimpleGUI as sg
 import re
 import subprocess
 import sys
+import configuration as config
 
 # For threading. Used to prevent the GUI from saying it is unresponsive when a process is taking a while.
 import threading
@@ -162,7 +163,7 @@ labels = [[sg.Text('Folder with CSVs', font=("roboto", 13))],
           [sg.Submit(key="submit", disabled=False), sg.Cancel()]]
 
 boxes = [[sg.Input(key="input_folder"), sg.FolderBrowse()],
-         [sg.Input(key="ait_collection")],
+         [sg.Input(key="ait_collection", default_text=config.ait_collection_default)],
          [sg.Text(font=("roboto", 1))],
          [sg.Text(font=("roboto", 13))]]
 
