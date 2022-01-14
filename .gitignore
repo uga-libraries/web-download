@@ -1,2 +1,5 @@
 #pycharm files
 .idea/
+
+#Configuration file with UGA private information
+configuration.py
