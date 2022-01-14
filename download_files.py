@@ -98,24 +98,22 @@ for seed in download_urls.keys():
     # Saves each PDF to the seed folder.
     for url in download_urls[seed]:
 
-        # Makes the desired name for the file. Generally, this is the last part of the URL plus ".pdf".
-        # If the last part of the URL is download, gets the previous part of the URL instead.
-        # TODO there may be other generic naming conventions to address as well.
+        # Makes the desired name for the file.
+        # If the last part of the URL is download, gets the previous part of the URL instead and adds pdf extension.
         if url.endswith("download"):
             regex = re.match(".*/(.*)/download", url)
             filename = regex.group(1) + ".pdf"
+        # Otherwise, gets the last part of the URL and adds the pdf extension if it doesn't already have it.
         else:
             regex = re.match(".*/(.*)", url)
-            # If the last part of the URL already has a pdf extension, does not add ".pdf" to it.
             if url.endswith(".pdf") or url.endswith(".PDF"):
                 filename = regex.group(1)
-            # If the last part of the URL is pdf without the period, removes the "pdf" before adding the .pdf extension.
             elif url.endswith("pdf") or url.endswith("PDF"):
                 filename = regex.group(1)[:-3] + ".pdf"
             else:
                 filename = regex.group(1) + ".pdf"
 
-        # Makes the URL in Archive-It by adding the Wayback URL, the collection id, and 3 for the most recent capture.
+        # Makes the URL for the file saved in Archive-It. The "3" is for the most recent capture.
         archiveit_url = f"https://wayback.archive-it.org/{collection}/3/{url}"
 
         # Saves the PDF to the seed's directory, named with the desired name.
