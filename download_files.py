@@ -72,26 +72,31 @@ for seed in download_urls.keys():
 
     # Makes a version of the seed URL which can be used for a folder name.
     # Removes http:// or https:// from the beginning if present, / from the end if present, and replaces other / with _
-    # TODO: try again with regular expressions. I wasn't getting the optional / at the end to work right the first try.
-    # TODO: are there other characters which could be a problem?
-    seed_directory_name = seed
-    if seed_directory_name.startswith("http://"):
-        seed_directory_name = seed.replace("http://", "")
-    elif seed_directory_name.startswith("https://"):
-        seed_directory_name = seed.replace("https://", "")
-    if seed_directory_name.endswith("/"):
-        seed_directory_name = seed_directory_name[:-1]
-    seed_directory_name = seed_directory_name.replace("/", "_")
+    try:
+        regex = re.match("https?:\\/\\/(.*?)\\/?$", seed)
+        seed_folder = regex.group(1)
+        seed_folder = seed_folder.replace("/", "_")
+    except AttributeError:
+        print("\nCannot make folder, URL pattern did not match:", seed)
+        print("No files will be downloaded for this seed.")
+        continue
 
     # Makes a folder for the seed and makes it the current directory so wget can save the PDFs there.
-    # TODO: add error handling for if the name has illegal characters.
-    os.makedirs(os.path.join(input_directory, seed_directory_name))
-    os.chdir(os.path.join(input_directory, seed_directory_name))
+    # If there is an error, no PDFs are downloaded for this seed.
+    try:
+        os.makedirs(os.path.join(input_directory, seed_folder))
+        os.chdir(os.path.join(input_directory, seed_folder))
+    except FileExistsError:
+        print("\nCannot make folder, as it already exists:", seed_folder)
+        print("No files will be downloaded for this seed.")
+        continue
+    except OSError:
+        print("\nCannot make a folder due to characters that are not permitted:", seed_folder)
+        print("No files will be downloaded for this seed.")
+        continue
 
-    # Saves the PDF, with the desired file name, to the seed folder.
+    # Saves each PDF to the seed folder.
     for url in download_urls[seed]:
-
-
 
         # Makes the desired name for the file. Generally, this is the last part of the URL plus ".pdf".
         # If the last part of the URL is download, gets the previous part of the URL instead.
@@ -111,8 +116,6 @@ for seed in download_urls.keys():
                 filename = regex.group(1) + ".pdf"
 
         # Makes the URL in Archive-It by adding the Wayback URL, the collection id, and 3 for the most recent capture.
-        # TODO: this may only work on Windows because of the direction of the slashes.
-        # Can't use os.path.join because url already has slashes in it.
         archiveit_url = f"https://wayback.archive-it.org/{collection}/3/{url}"
 
         # Saves the PDF to the seed's directory, named with the desired name.
