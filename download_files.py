@@ -163,7 +163,7 @@ labels = [[sg.Text('Folder with CSVs', font=("roboto", 13))],
           [sg.Submit(key="submit", disabled=False), sg.Cancel()]]
 
 boxes = [[sg.Input(key="input_folder"), sg.FolderBrowse()],
-         [sg.Input(key="ait_collection", default_text=config.ait_collection_default)],
+         [sg.Combo(config.ait_collection_list, key="ait_collection", default_value=config.ait_collection_default)],
          [sg.Text(font=("roboto", 1))],
          [sg.Text(font=("roboto", 13))]]
 
