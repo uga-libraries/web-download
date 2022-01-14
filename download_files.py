@@ -189,10 +189,6 @@ while True:
     # If the user submitted values, tests they are correct. If not, errors are displayed. If yes, the script is run.
     if event == "submit":
 
-        # Communicate that the script is starting to the user in the GUI dialogue box.
-        print("\nPlease wait while the PDFs you requested are downloaded...")
-        window.Refresh()
-
         # Error testing on all of the user inputs.
         # Errors are saved to a list so all values can be tested prior to notifying the user.
         errors = []
@@ -211,6 +207,11 @@ while True:
 
         # If the user inputs are correct, runs the script.
         if len(errors) == 0:
+
+            # Communicate that the script is starting to the user in the GUI dialogue box.
+            print("\n-----------------------------------------------------------")
+            print("\nPlease wait while the PDFs you requested are downloaded...")
+            window.Refresh()
 
             # For threading: run download_files() in a thread.
             os.chdir(values["input_folder"])
