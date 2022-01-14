@@ -193,28 +193,33 @@ while True:
         print("\nPlease wait while the PDFs you requested are downloaded...")
         window.Refresh()
 
-        # Error testing on all of the user inputs. Both fields are required and the path must be valid.
+        # Error testing on all of the user inputs.
         # Errors are saved to a list so all values can be tested prior to notifying the user.
         errors = []
+
+        # CSV folder is required and must be a valid path.
         if values["input_folder"] == "":
-            errors.append("Folder with CSV can't be blank.")
-        if not os.path.exists(values["input_folder"]):
-            errors.append("Folder with CSV path is not correct.")
+            errors.append("Folder with CSVs can't be blank.")
+        elif not os.path.exists(values["input_folder"]):
+            errors.append("Folder with CSVs path is not correct.")
+
+        # Collection number is required and must be on the list in the configuration file.
         if values["ait_collection"] == "":
             errors.append("Archive-It Collection Number cannot be blank.")
+        elif values["ait_collection"] not in config.ait_collection_list:
+            errors.append("Archive-It Collection Number is not one of the permitted values.")
 
         # If the user inputs are correct, runs the script.
         if len(errors) == 0:
 
             # For threading: run download_files() in a thread.
             os.chdir(values["input_folder"])
-            processing_thread = threading.Thread(target=download_files, args=(values["input_folder"],
-                                                                              values["ait_collection"],
-                                                                              window))
+            processing_thread = threading.Thread(target=download_files,
+                                                 args=(values["input_folder"], values["ait_collection"], window))
             processing_thread.start()
 
             # Disable the submit button while make_csv() is running so users can't overwhelm computing resources
-            # by requesting new CSVs before the first is done being created.
+            # starting a new request before the first is done.
             window[f'{"submit"}'].update(disabled=True)
 
         # If some of the user inputs were not correct, creates a pop up box alerting the user to the problem
