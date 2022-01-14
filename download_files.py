@@ -73,7 +73,7 @@ for seed in download_urls.keys():
     # Makes a version of the seed URL which can be used for a folder name.
     # Removes http:// or https:// from the beginning if present, / from the end if present, and replaces other / with _
     try:
-        regex = re.match("https?:\\/\\/(.*?)\\/?$", seed)
+        regex = re.match("https?://(.*?)/?$", seed)
         seed_folder = regex.group(1)
         seed_folder = seed_folder.replace("/", "_")
     except AttributeError:
@@ -116,7 +116,7 @@ for seed in download_urls.keys():
             else:
                 filename = regex.group(1) + ".pdf"
 
-        # Checks if a file with this name has already been downloaded.
+        # Checks if a file with this name has already been downloaded for this seed.
         # Generic names are common and a numeric extension is added to keep the files different.
         # If it is new, adds to the dictionary with a numeric extension of 1 (the next one to use).
         # If it has been used, adds the numeric extension to the filename and updates the extension in the dictionary.
@@ -131,7 +131,20 @@ for seed in download_urls.keys():
         archiveit_url = f"https://wayback.archive-it.org/{collection}/3/{url}"
 
         # Saves the PDF to the seed's directory, named with the desired name.
-        subprocess.run(f'wget -O "{filename}" "{archiveit_url}"', shell=True)
+        try:
+            download_result = subprocess.run(f'wget -O "{filename}" "{archiveit_url}"',
+                                             shell=True, stderr=subprocess.PIPE)
+        except:
+            print("Error with downloading the file:", url)
+
+        # Checks the wget output for any problem with the Archive-It connection.
+        if "HTTP request sent, awaiting response... 200 OK" not in str(download_result):
+            print("Connection error with Archive-It:", url)
+
+        # Checks the wget output to make sure the entire file was downloaded.
+        regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result))
+        if not regex.group(1) == regex.group(2):
+            print("Download size is incomplete.", url)
 
         # # ALTERNATIVE: download from the live site again so don't have to save the crawl.
         # subprocess.run(f'wget -O "{filename}" "{url}"', shell=True)
