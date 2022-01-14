@@ -95,6 +95,9 @@ for seed in download_urls.keys():
         print("No files will be downloaded for this seed.")
         continue
 
+    # Starts a dictionary of downloaded PDFs to detect duplicate file names.
+    downloads = {}
+
     # Saves each PDF to the seed folder.
     for url in download_urls[seed]:
 
@@ -113,15 +116,22 @@ for seed in download_urls.keys():
             else:
                 filename = regex.group(1) + ".pdf"
 
+        # Checks if a file with this name has already been downloaded.
+        # Generic names are common and a numeric extension is added to keep the files different.
+        # If it is new, adds to the dictionary with a numeric extension of 1 (the next one to use).
+        # If it has been used, adds the numeric extension to the filename and updates the extension in the dictionary.
+        if filename in downloads:
+            number = downloads[filename]
+            downloads[filename] += 1
+            filename = filename[:-4] + "_" + str(number) + ".pdf"
+        else:
+            downloads[filename] = 1
+
         # Makes the URL for the file saved in Archive-It. The "3" is for the most recent capture.
         archiveit_url = f"https://wayback.archive-it.org/{collection}/3/{url}"
 
         # Saves the PDF to the seed's directory, named with the desired name.
-        # TODO: Can end up with more than one different file that has the same name, and only one is saved.
-        #   wget non-clobber will not download if already present, rather than download with a rename.
-        # TODO: prints a lot to the terminal. Make it quiet? Or like to see the script progress?
-        # TODO: error handling
-        # subprocess.run(f'wget -O "{filename}" "{archiveit_url}"', shell=True)
+        subprocess.run(f'wget -O "{filename}" "{archiveit_url}"', shell=True)
 
-        # ALTERNATIVE: download from the live site again so don't have to save the crawl.
-        subprocess.run(f'wget -O "{filename}" "{url}"', shell=True)
+        # # ALTERNATIVE: download from the live site again so don't have to save the crawl.
+        # subprocess.run(f'wget -O "{filename}" "{url}"', shell=True)
