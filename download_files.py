@@ -44,7 +44,7 @@ def download_files(input_directory, collection, window):
                     else:
                         download_urls_dict[seed] = [url]
 
-            return download_urls_dict
+        return download_urls_dict
 
     def make_seed_folder():
         """Makes a folder for the seed and changes the current directory to that folder."""
