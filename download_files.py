@@ -49,6 +49,9 @@ def download_files(input_directory, collection, window):
     def make_seed_folder():
         """Makes a folder for the seed and changes the current directory to that folder."""
 
+        # Prints the seed name to the GUI to show the script's progress.
+        print("Starting next seed:", seed)
+
         # Makes a version of the seed URL which can be used for a folder name.
         # Removes http:// or https://, / from the end if present, and replaces other / with _
         try:
@@ -111,6 +114,7 @@ def download_files(input_directory, collection, window):
     for seed in to_download.keys():
 
         # Makes a folder for the seed and makes that the current directory.
+        # Also prints the seed name to the GUI to show the script's progress.
         make_seed_folder()
 
         # Starts a dictionary of downloaded PDFs to detect duplicate file names with this seed.
