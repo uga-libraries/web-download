@@ -158,12 +158,12 @@ gc.disable()
 sg.theme("DarkTeal6")
 
 labels = [[sg.Text('Folder with CSVs', font=("roboto", 13))],
-          [sg.Text('Archive-It Collection Number', font=("roboto", 13))],
+          [sg.Text('Archive-It Collection', font=("roboto", 13))],
           [sg.Text(font=("roboto", 1))],
           [sg.Submit(key="submit", disabled=False), sg.Cancel()]]
 
 boxes = [[sg.Input(key="input_folder"), sg.FolderBrowse()],
-         [sg.Combo(config.ait_collection_list, key="ait_collection", default_value=config.ait_collection_default)],
+         [sg.Combo(list(config.ait_coll_dict.keys()), key="ait_collection", default_value=config.ait_coll_default)],
          [sg.Text(font=("roboto", 1))],
          [sg.Text(font=("roboto", 13))]]
 
@@ -199,11 +199,11 @@ while True:
         elif not os.path.exists(values["input_folder"]):
             errors.append("Folder with CSVs path is not correct.")
 
-        # Collection number is required and must be on the list in the configuration file.
+        # Collection name is required and must match one of the collections in the configuration file.
         if values["ait_collection"] == "":
-            errors.append("Archive-It Collection Number cannot be blank.")
-        elif values["ait_collection"] not in config.ait_collection_list:
-            errors.append("Archive-It Collection Number is not one of the permitted values.")
+            errors.append("Archive-It Collection cannot be blank.")
+        elif values["ait_collection"] not in config.ait_coll_dict:
+            errors.append("Archive-It Collection is not one of the permitted values.")
 
         # If the user inputs are correct, runs the script.
         if len(errors) == 0:
@@ -213,10 +213,13 @@ while True:
             print("\nPlease wait while the PDFs you requested are downloaded...")
             window.Refresh()
 
+            # Calculate collection ID from collection name (the user input)
+            collection_id = config.ait_coll_dict[values["ait_collection"]]
+
             # For threading: run download_files() in a thread.
             os.chdir(values["input_folder"])
             processing_thread = threading.Thread(target=download_files,
-                                                 args=(values["input_folder"], values["ait_collection"], window))
+                                                 args=(values["input_folder"], collection_id, window))
             processing_thread.start()
 
             # Disable the submit button while make_csv() is running so users can't overwhelm computing resources
