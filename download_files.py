@@ -77,6 +77,9 @@ def download_files(input_directory, collection, window):
             print("No files will be downloaded for this seed.")
             return
 
+        # Return seed folder name, which is needed later to check for completeness
+        return seed_folder
+
     def get_file_name(file_url):
         """Makes the filename based on the file URL."""
 
@@ -110,12 +113,17 @@ def download_files(input_directory, collection, window):
     # Gets the PDF URLs from each CSV in the input folder that will be downloaded.
     to_download = get_download_urls()
 
+    # Makes a log to save the results of each seed download.
+    download_log = open(os.path.join(input_directory, "download_log.csv",), "a", newline="")
+    download_log_write = csv.writer(download_log)
+    download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs", "Match?", "Errors"])
+
     # For each seed, downloads the PDF for each URL in the list and saves it to a folder named with the seed.
     for seed in to_download.keys():
 
         # Makes a folder for the seed and makes that the current directory.
         # Also prints the seed name to the GUI to show the script's progress.
-        make_seed_folder()
+        seed_folder_name = make_seed_folder()
 
         # Starts a dictionary of downloaded PDFs to detect duplicate file names with this seed.
         downloads = {}
@@ -145,6 +153,16 @@ def download_files(input_directory, collection, window):
             # regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result))
             # if not regex.group(1) == regex.group(2):
             #     print("Download size is incomplete.", url)
+
+        # Verifies the number of downloaded PDFs matches the number of URLs in the dictionary for that seed.
+        # Saves the results to a log.
+        files_in_dictionary = len(to_download[seed])
+        files_in_folder = len(os.listdir(os.path.join(input_directory, seed_folder_name)))
+        download_log_write.writerow([seed, files_in_dictionary, files_in_folder,
+                                     files_in_dictionary == files_in_folder])
+
+    # Close the log.
+    download_log.close()
 
     # Communicate that the script has completed in the GUI dialogue box.
     print("\nDownloading is complete.")
