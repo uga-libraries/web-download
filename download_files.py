@@ -100,8 +100,11 @@ def download_files(input_directory, collection, window):
             name = regex.group(1)
 
         # Adds a ".pdf" file extension, if it doesn't have one. Windows won't recognize the file without an extension.
-        if not name.endswith((".pdf", ".PDF")):
-            if name.endswith(("pdf", "PDF")):
+        # Replacing ".PDF" with ".pdf" to avoid any problems with duplication from case insensitive systems.
+        if not name.endswith(".pdf"):
+            if name.endswith(".PDF"):
+                name = name[:-4] + ".pdf"
+            elif name.endswith(("pdf", "PDF")):
                 name = name[:-3] + ".pdf"
             else:
                 name = name + ".pdf"
