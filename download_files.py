@@ -118,6 +118,11 @@ def download_files(input_directory, collection, window):
     download_log_write = csv.writer(download_log)
     download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs", "Match?", "Errors"])
 
+    # Makes a log to save the results of each file download when there are errors.
+    error_log = open(os.path.join(input_directory, "error_log.csv",), "a", newline="")
+    error_log_write = csv.writer(error_log)
+    error_log_write.writerow(["WGET Command", "Return Code", "STDERR"])
+
     # For each seed, downloads the PDF for each URL in the list and saves it to a folder named with the seed.
     for seed in to_download.keys():
 
@@ -127,6 +132,9 @@ def download_files(input_directory, collection, window):
 
         # Starts a dictionary of downloaded PDFs to detect duplicate file names with this seed.
         downloads = {}
+
+        # Starts a dictionary of tool output from downloading to capture errors for the log.
+        download_errors = {}
 
         # Saves each PDF to the seed folder.
         for url in to_download[seed]:
@@ -145,24 +153,37 @@ def download_files(input_directory, collection, window):
                 print("Error with downloading the file:", url)
                 return
 
-            # # Checks the wget output for any problem with the Archive-It connection.
-            # if "HTTP request sent, awaiting response... 200 OK" not in str(download_result):
-            #     print("Connection error with Archive-It:", url)
-            #
-            # # Checks the wget output to make sure the entire file was downloaded.
-            # regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result))
-            # if not regex.group(1) == regex.group(2):
-            #     print("Download size is incomplete.", url)
+            # Checks the result of downloading (the return code).
+            # If there were no errors (code 0), verifies the correct size was downloaded from wget output.
+            # If there was an error, saves the error to the dictionary.
+            if download_result.returncode == 0:
+                regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result))
+                if not regex.group(1) == regex.group(2):
+                    if seed in download_errors.keys():
+                        download_errors[seed].append(download_result)
+                    else:
+                        download_errors[seed] = [download_result]
+            else:
+                if seed in download_errors.keys():
+                    download_errors[seed].append(download_result)
+                else:
+                    download_errors[seed] = [download_result]
+
+        # If any of the files had download errors, makes a log with each file error.
+        if seed in download_errors.keys():
+            for error in download_errors[seed]:
+                error_log_write.writerow([error.args, error.returncode, error.stderr.decode('utf-8')])
 
         # Verifies the number of downloaded PDFs matches the number of URLs in the dictionary for that seed.
         # Saves the results to a log.
         files_in_dictionary = len(to_download[seed])
         files_in_folder = len(os.listdir(os.path.join(input_directory, seed_folder_name)))
         download_log_write.writerow([seed, files_in_dictionary, files_in_folder,
-                                     files_in_dictionary == files_in_folder])
+                                     files_in_dictionary == files_in_folder, seed in download_errors.keys()])
 
-    # Close the log.
+    # Close the logs.
     download_log.close()
+    error_log.close()
 
     # Communicate that the script has completed in the GUI dialogue box.
     print("\nDownloading is complete.")
