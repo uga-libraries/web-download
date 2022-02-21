@@ -24,13 +24,18 @@ def download_files(input_directory, collection, window):
 
         # Reads every CSV in the CSV directory.
         for input_csv in os.listdir("."):
+
+            # Skips folders and files that aren't CSVs.
+            if not input_csv.endswith(".csv") or os.path.isdir(input_csv):
+                continue
+
             with open(input_csv) as csvfile:
                 data = csv.reader(csvfile)
 
                 # Verifies the header has the expected values. If not, prints an error and starts the next CSV.
                 header = next(data)
                 if not header == ["url", "size", "is_duplicate", "seed"]:
-                    print("This file is not formatted correctly and will be skipped:", input_csv)
+                    print("This CSV file is not formatted correctly and will be skipped:", input_csv)
                     continue
 
                 # Adds the seed to the download_urls dictionary if it is not already present.
