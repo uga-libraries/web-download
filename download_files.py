@@ -118,8 +118,16 @@ def download_files(input_directory, collection, window):
     # Gets the PDF URLs from each CSV in the input folder that will be downloaded.
     to_download = get_download_urls()
 
+    # If no URLs were located, communicates that the script has completed in the GUI dialogue box,
+    # ends the thread, and quits the script.
+    if to_download == {}:
+        print("\nNo URLs were found to be downloaded.")
+        window.Refresh()
+        window.write_event_value('-SCRIPT_THREAD-', (threading.current_thread().name,))
+        return
+
     # Makes a log to save the results of each seed download.
-    download_log = open(os.path.join(input_directory, "download_log.csv",), "a", newline="")
+    download_log = open(os.path.join(input_directory, "download_log.csv"), "a", newline="")
     download_log_write = csv.writer(download_log)
     download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs", "Match?", "Errors"])
 
