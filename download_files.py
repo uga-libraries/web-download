@@ -87,7 +87,7 @@ def download_files(input_directory, collection, window):
         """Makes the filename based on the file URL."""
 
         # If the last part of the URL is download, gets the previous part of the URL and adds pdf extension.
-        if file_url.endswith("download"):
+        if file_url.endswith("/download"):
             regex = re.match(".*/(.*)/download", file_url)
             name = regex.group(1) + ".pdf"
         # Otherwise, gets the last part of the URL and adds the pdf extension if it doesn't already have it.
