@@ -152,12 +152,7 @@ def download_files(input_directory, collection, window):
             ait_url = f"https://wayback.archive-it.org/{collection}/3/{url}"
 
             # Saves the PDF to the seed's directory, named with the desired name.
-            try:
-                download_result = subprocess.run(f'wget -O "{filename}" "{ait_url}"', shell=True,
-                                                 stderr=subprocess.PIPE)
-            except:
-                print("Error with downloading the file:", url)
-                return
+            download_result = subprocess.run(f'wget -O "{filename}" "{ait_url}"', shell=True, stderr=subprocess.PIPE)
 
             # Checks the result of downloading (the return code).
             # If there were no errors (code 0), verifies the correct size was downloaded from wget output.
