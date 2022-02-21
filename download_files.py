@@ -86,19 +86,25 @@ def download_files(input_directory, collection, window):
     def get_file_name(file_url):
         """Makes the filename based on the file URL."""
 
-        # If the last part of the URL is download, gets the previous part of the URL and adds pdf extension.
-        if file_url.endswith("/download"):
+        # Select the portion of the URL to use for the name.
+        #   -If the URL doesn't have multiple parts (no /, which is unlikely), the whole URL is the name.
+        #   -If the last part of the URL is download, the previous part of the URL is the name.
+        #   -Otherwise, the last part of the URL is the name.
+        if "/" not in file_url:
+            name = file_url
+        elif file_url.endswith("/download"):
             regex = re.match(".*/(.*)/download", file_url)
-            name = regex.group(1) + ".pdf"
-        # Otherwise, gets the last part of the URL and adds the pdf extension if it doesn't already have it.
+            name = regex.group(1)
         else:
             regex = re.match(".*/(.*)", file_url)
-            if file_url.endswith((".pdf", ".PDF")):
-                name = regex.group(1)
-            elif file_url.endswith(("pdf", "PDF")):
-                name = regex.group(1)[:-3] + ".pdf"
+            name = regex.group(1)
+
+        # Adds a ".pdf" file extension, if it doesn't have one. Windows won't recognize the file without an extension.
+        if not name.endswith((".pdf", ".PDF")):
+            if name.endswith(("pdf", "PDF")):
+                name = name[:-3] + ".pdf"
             else:
-                name = regex.group(1) + ".pdf"
+                name = name + ".pdf"
 
         # Replaces any characters which Windows does not allow in a filename with an underscore.
         for character in ('/', '\\', '*', '?', '"', '<', '>', '|'):
