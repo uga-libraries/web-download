@@ -66,7 +66,7 @@ def download_files(input_directory, collection, window):
         except AttributeError:
             print("\nCannot make folder, URL pattern did not match:", seed)
             print("No files will be downloaded for this seed.")
-            return
+            raise AttributeError
 
         # Makes a folder for the seed and makes it the current directory so wget can save the PDFs there.
         # If there is an error, no PDFs are downloaded for this seed.
@@ -80,7 +80,7 @@ def download_files(input_directory, collection, window):
         except OSError:
             print("\nCannot make a folder due to characters that are not permitted:", seed_folder)
             print("No files will be downloaded for this seed.")
-            return
+            raise OSError
 
         # Return seed folder name, which is needed later to check for completeness
         return seed_folder
@@ -147,7 +147,17 @@ def download_files(input_directory, collection, window):
 
         # Makes a folder for the seed and makes that the current directory.
         # Also prints the seed name to the GUI to show the script's progress.
-        seed_folder_name = make_seed_folder()
+        # If there was an error making the seed folder, adds that to the log and starts the next seed.
+        try:
+            seed_folder_name = make_seed_folder()
+        except AttributeError:
+            download_log_write.writerow([seed, "n/a", "n/a", "n/a",
+                                         "Could not make a folder for this seed. Does not match expected pattern."])
+            continue
+        except OSError:
+            download_log_write.writerow([seed, "n/a", "n/a", "n/a",
+                                         "Could not make a folder for this seed. Has unpermitted character(s)."])
+            continue
 
         # Starts a dictionary of downloaded PDFs to detect duplicate file names with this seed.
         downloads = {}
