@@ -97,6 +97,11 @@ def download_files(input_directory, collection, window):
             else:
                 name = regex.group(1) + ".pdf"
 
+        # Replaces any characters which Windows does not allow in a filename with an underscore.
+        for character in ('/', '\\', '*', '?', '"', '<', '>', '|'):
+            if character in name:
+                name = name.replace(character, "_")
+
         # Checks if a file with this name has already been downloaded for this seed.
         # Generic names are common and a numeric extension is added to keep the files different.
         # If it is new, adds to the dictionary with a numeric extension of 1 (the next one to use).
