@@ -124,7 +124,8 @@ def download_files(input_directory, collection, window):
     download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs", "Match?", "Errors"])
 
     # Makes a log to save the results of each file download when there are errors.
-    error_log = open(os.path.join(input_directory, "error_log.csv",), "a", newline="")
+    error_log_path = os.path.join(input_directory, "error_log.csv")
+    error_log = open(error_log_path, "a", newline="")
     error_log_write = csv.writer(error_log)
     error_log_write.writerow(["WGET Command", "Return Code", "STDERR"])
 
@@ -189,6 +190,10 @@ def download_files(input_directory, collection, window):
     # Close the logs.
     download_log.close()
     error_log.close()
+
+    # Deletes the error log if it is 33 bytes in size, meaning all it contains is the header and no files had errors.
+    if os.path.getsize(error_log_path) == 33:
+        os.remove(error_log_path)
 
     # Communicate that the script has completed in the GUI dialogue box.
     print("\nDownloading is complete.")
