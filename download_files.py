@@ -68,15 +68,13 @@ def download_files(input_directory, collection, window):
             print("No files will be downloaded for this seed.")
             raise AttributeError
 
-        # Makes a folder for the seed and makes it the current directory so wget can save the PDFs there.
+        # Makes a folder for the seed, if it doesn't exist, and makes it the current directory to save the PDFs there.
         # If there is an error, no PDFs are downloaded for this seed.
         try:
             os.makedirs(os.path.join(input_directory, seed_folder))
             os.chdir(os.path.join(input_directory, seed_folder))
         except FileExistsError:
-            print("\nCannot make folder, as it already exists:", seed_folder)
-            print("No files will be downloaded for this seed.")
-            return
+            os.chdir(os.path.join(input_directory, seed_folder))
         except OSError:
             print("\nCannot make a folder due to characters that are not permitted:", seed_folder)
             print("No files will be downloaded for this seed.")
