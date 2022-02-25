@@ -159,7 +159,7 @@ def download_files(input_directory, collection, window):
     # Makes a log to save the results of each seed download.
     download_log = open(os.path.join(input_directory, "download_log.csv"), "a", newline="")
     download_log_write = csv.writer(download_log)
-    download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs", "Match?", "Errors"])
+    download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs", "Number of Downloads", "Download Errors"])
 
     # For each seed, downloads the PDF for each URL in the list and saves it to a folder named with the seed.
     for seed in to_download.keys():
@@ -215,8 +215,20 @@ def download_files(input_directory, collection, window):
         # Saves the results to a log.
         files_in_dictionary = len(to_download[seed])
         files_in_folder = len(os.listdir(os.path.join(input_directory, seed_folder_name)))
-        download_log_write.writerow([seed, files_in_dictionary, files_in_folder,
-                                     files_in_dictionary == files_in_folder, download_error])
+
+        # Creates language needed for the download log.
+        if files_in_folder == files_in_folder:
+            file_match = "Errors found"
+        else:
+            file_match = "No errors found"
+
+        if download_error:
+            seed_error = "Errors found"
+        else:
+            seed_error = "No errors found"
+
+        # Saves results for this seed to the download log.
+        download_log_write.writerow([seed, files_in_dictionary, files_in_folder, file_match, seed_error])
 
     # Close the download log.
     download_log.close()
