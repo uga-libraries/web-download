@@ -178,8 +178,10 @@ def download_files(input_directory, collection, window):
                                          "Could not make a folder for this seed. Has unpermitted character(s)."])
             continue
 
-        # Starts a dictionary of downloaded PDFs to detect duplicate file names with this seed.
+        # Starts a dictionary of downloaded PDFs to detect duplicate file names with this seed
+        # and a variable to track if there are download errors for later logging.
         downloads = {}
+        download_error = False
 
         # Saves each PDF to the seed folder.
         for url in to_download[seed]:
@@ -201,17 +203,20 @@ def download_files(input_directory, collection, window):
                 try:
                     if not regex.group(1) == regex.group(2):
                         add_error("Size downloaded is wrong", download_result)
+                        download_error = True
                 except AttributeError:
                     add_error("Can't calculate size downloaded", download_result)
+                    download_error = True
             else:
                 add_error("Error when downloading", download_result)
+                download_error = True
 
         # Verifies the number of downloaded PDFs matches the number of URLs in the dictionary for that seed.
         # Saves the results to a log.
         files_in_dictionary = len(to_download[seed])
         files_in_folder = len(os.listdir(os.path.join(input_directory, seed_folder_name)))
         download_log_write.writerow([seed, files_in_dictionary, files_in_folder,
-                                     files_in_dictionary == files_in_folder, "TODO - know seeds with errors?"])
+                                     files_in_dictionary == files_in_folder, download_error])
 
     # Close the download log.
     download_log.close()
