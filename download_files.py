@@ -188,8 +188,14 @@ def download_files(input_directory, collection, window):
             # If there were no errors (code 0), verifies the correct size was downloaded from wget output.
             # If there was an error, saves the error to the dictionary.
             if download_result.returncode == 0:
-                regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result))
-                if not regex.group(1) == regex.group(2):
+                regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result.stderr))
+                try:
+                    if not regex.group(1) == regex.group(2):
+                        if seed in download_errors.keys():
+                            download_errors[seed].append(download_result)
+                        else:
+                            download_errors[seed] = [download_result]
+                except AttributeError:
                     if seed in download_errors.keys():
                         download_errors[seed].append(download_result)
                     else:
