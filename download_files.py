@@ -127,6 +127,24 @@ def download_files(input_directory, collection, window):
 
         return name
 
+    def add_error(message, output):
+        """Makes an error log, if one doesn't already exists, and adds the data to it."""
+
+        error_log_path = os.path.join(input_directory, "error_log.csv")
+
+        # Tests if a header row is needed, which is if the log does not already exists.
+        if not os.path.exists(error_log_path):
+            add_header = True
+        else:
+            add_header = False
+
+        # Opens or makes the error log, adds a header if needed, and adds the error.
+        with open(error_log_path, "a", newline="") as error_log:
+            error_log_write = csv.writer(error_log)
+            if add_header:
+                error_log_write.writerow(["Error", "WGET Command", "Return Code", "STDERR"])
+            error_log_write.writerow([message, output.args, output.returncode, output.stderr.decode('utf-8')])
+
     # Gets the PDF URLs from each CSV in the input folder that will be downloaded.
     to_download = get_download_urls()
 
@@ -142,12 +160,6 @@ def download_files(input_directory, collection, window):
     download_log = open(os.path.join(input_directory, "download_log.csv"), "a", newline="")
     download_log_write = csv.writer(download_log)
     download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs", "Match?", "Errors"])
-
-    # Makes a log to save the results of each file download when there are errors.
-    error_log_path = os.path.join(input_directory, "error_log.csv")
-    error_log = open(error_log_path, "a", newline="")
-    error_log_write = csv.writer(error_log)
-    error_log_write.writerow(["Error", "WGET Command", "Return Code", "STDERR"])
 
     # For each seed, downloads the PDF for each URL in the list and saves it to a folder named with the seed.
     for seed in to_download.keys():
@@ -188,14 +200,11 @@ def download_files(input_directory, collection, window):
                 regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result.stderr))
                 try:
                     if not regex.group(1) == regex.group(2):
-                        error_log_write.writerow(["Size downloaded is wrong", download_result.args,
-                                                  download_result.returncode, download_result.stderr.decode('utf-8')])
+                        add_error("Size downloaded is wrong", download_result)
                 except AttributeError:
-                    error_log_write.writerow(["Can't calculate size downloaded", download_result.args,
-                                              download_result.returncode, download_result.stderr.decode('utf-8')])
+                    add_error("Can't calculate size downloaded", download_result)
             else:
-                error_log_write.writerow(["Error when downloading", download_result.args,
-                                          download_result.returncode, download_result.stderr.decode('utf-8')])
+                add_error("Error when downloading", download_result)
 
         # Verifies the number of downloaded PDFs matches the number of URLs in the dictionary for that seed.
         # Saves the results to a log.
@@ -204,13 +213,8 @@ def download_files(input_directory, collection, window):
         download_log_write.writerow([seed, files_in_dictionary, files_in_folder,
                                      files_in_dictionary == files_in_folder, "TODO - know seeds with errors?"])
 
-    # Close the logs.
+    # Close the download log.
     download_log.close()
-    error_log.close()
-
-    # Deletes the error log if it is 33 bytes in size, meaning all it contains is the header and no files had errors.
-    if os.path.getsize(error_log_path) == 39:
-        os.remove(error_log_path)
 
     # Communicate that the script has completed in the GUI dialogue box.
     print("\nDownloading is complete.")
