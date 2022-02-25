@@ -212,15 +212,14 @@ def download_files(input_directory, collection, window):
                 download_error = True
 
         # Verifies the number of downloaded PDFs matches the number of URLs in the dictionary for that seed.
-        # Saves the results to a log.
         files_in_dictionary = len(to_download[seed])
         files_in_folder = len(os.listdir(os.path.join(input_directory, seed_folder_name)))
 
         # Creates language needed for the download log.
         if files_in_folder == files_in_folder:
-            file_match = "Errors found"
-        else:
             file_match = "No errors found"
+        else:
+            file_match = "Errors found"
 
         if download_error:
             seed_error = "Errors found"
