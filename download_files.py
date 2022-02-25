@@ -147,7 +147,7 @@ def download_files(input_directory, collection, window):
     error_log_path = os.path.join(input_directory, "error_log.csv")
     error_log = open(error_log_path, "a", newline="")
     error_log_write = csv.writer(error_log)
-    error_log_write.writerow(["WGET Command", "Return Code", "STDERR"])
+    error_log_write.writerow(["Error", "WGET Command", "Return Code", "STDERR"])
 
     # For each seed, downloads the PDF for each URL in the list and saves it to a folder named with the seed.
     for seed in to_download.keys():
@@ -169,9 +169,6 @@ def download_files(input_directory, collection, window):
         # Starts a dictionary of downloaded PDFs to detect duplicate file names with this seed.
         downloads = {}
 
-        # Starts a dictionary of tool output from downloading to capture errors for the log.
-        download_errors = {}
-
         # Saves each PDF to the seed folder.
         for url in to_download[seed]:
 
@@ -186,44 +183,33 @@ def download_files(input_directory, collection, window):
 
             # Checks the result of downloading (the return code).
             # If there were no errors (code 0), verifies the correct size was downloaded from wget output.
-            # If there was an error, saves the error to the dictionary.
+            # If there was an error, saves the error to a log.
             if download_result.returncode == 0:
                 regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result.stderr))
                 try:
                     if not regex.group(1) == regex.group(2):
-                        if seed in download_errors.keys():
-                            download_errors[seed].append(download_result)
-                        else:
-                            download_errors[seed] = [download_result]
+                        error_log_write.writerow(["Size downloaded is wrong", download_result.args,
+                                                  download_result.returncode, download_result.stderr.decode('utf-8')])
                 except AttributeError:
-                    if seed in download_errors.keys():
-                        download_errors[seed].append(download_result)
-                    else:
-                        download_errors[seed] = [download_result]
+                    error_log_write.writerow(["Can't calculate size downloaded", download_result.args,
+                                              download_result.returncode, download_result.stderr.decode('utf-8')])
             else:
-                if seed in download_errors.keys():
-                    download_errors[seed].append(download_result)
-                else:
-                    download_errors[seed] = [download_result]
-
-        # If any of the files had download errors, makes a log with each file error.
-        if seed in download_errors.keys():
-            for error in download_errors[seed]:
-                error_log_write.writerow([error.args, error.returncode, error.stderr.decode('utf-8')])
+                error_log_write.writerow(["Error when downloading", download_result.args,
+                                          download_result.returncode, download_result.stderr.decode('utf-8')])
 
         # Verifies the number of downloaded PDFs matches the number of URLs in the dictionary for that seed.
         # Saves the results to a log.
         files_in_dictionary = len(to_download[seed])
         files_in_folder = len(os.listdir(os.path.join(input_directory, seed_folder_name)))
         download_log_write.writerow([seed, files_in_dictionary, files_in_folder,
-                                     files_in_dictionary == files_in_folder, seed in download_errors.keys()])
+                                     files_in_dictionary == files_in_folder, "TODO - know seeds with errors?"])
 
     # Close the logs.
     download_log.close()
     error_log.close()
 
     # Deletes the error log if it is 33 bytes in size, meaning all it contains is the header and no files had errors.
-    if os.path.getsize(error_log_path) == 33:
+    if os.path.getsize(error_log_path) == 39:
         os.remove(error_log_path)
 
     # Communicate that the script has completed in the GUI dialogue box.
