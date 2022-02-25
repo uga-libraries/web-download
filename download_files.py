@@ -216,7 +216,7 @@ def download_files(input_directory, collection, window):
         files_in_folder = len(os.listdir(os.path.join(input_directory, seed_folder_name)))
 
         # Creates language needed for the download log.
-        if files_in_folder == files_in_folder:
+        if files_in_dictionary == files_in_folder:
             file_match = "No errors found"
         else:
             file_match = "Errors found"
