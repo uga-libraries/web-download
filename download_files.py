@@ -64,8 +64,6 @@ def download_files(input_directory, collection, window):
             seed_folder = regex.group(1)
             seed_folder = seed_folder.replace("/", "_")
         except AttributeError:
-            print("\nCannot make folder, URL pattern did not match:", seed)
-            print("No files will be downloaded for this seed.")
             raise AttributeError
 
         # Makes a folder for the seed, if it doesn't exist, and makes it the current directory to save the PDFs there.
@@ -76,8 +74,6 @@ def download_files(input_directory, collection, window):
         except FileExistsError:
             os.chdir(os.path.join(input_directory, seed_folder))
         except OSError:
-            print("\nCannot make a folder due to characters that are not permitted:", seed_folder)
-            print("No files will be downloaded for this seed.")
             raise OSError
 
         # Return seed folder name, which is needed later to check for completeness
