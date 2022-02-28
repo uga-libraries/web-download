@@ -1,6 +1,3 @@
 #pycharm files
 .idea/
 __pycache__
-
-#Configuration file with UGA private information
-configuration.py

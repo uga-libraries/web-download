@@ -4,7 +4,7 @@ import PySimpleGUI as sg
 import re
 import subprocess
 import sys
-import configuration as config
+import ait_collections as ait
 
 # For threading. Used to prevent the GUI from saying it is unresponsive when a process is taking a while.
 import threading
@@ -249,7 +249,7 @@ labels = [[sg.Text('Folder with CSVs', font=("roboto", 13))],
           [sg.Submit(key="submit", disabled=False), sg.Cancel()]]
 
 boxes = [[sg.Input(key="input_folder"), sg.FolderBrowse()],
-         [sg.Combo(list(config.ait_coll_dict.keys()), key="ait_collection", default_value=config.ait_coll_default)],
+         [sg.Combo(list(ait.ait_coll_dict.keys()), key="ait_collection", default_value=ait.ait_coll_default)],
          [sg.Text(font=("roboto", 1))],
          [sg.Text(font=("roboto", 13))]]
 
@@ -288,7 +288,7 @@ while True:
         # Collection name is required and must match one of the collections in the configuration file.
         if values["ait_collection"] == "":
             errors.append("Archive-It Collection cannot be blank.")
-        elif values["ait_collection"] not in config.ait_coll_dict:
+        elif values["ait_collection"] not in ait.ait_coll_dict:
             errors.append("Archive-It Collection is not one of the permitted values.")
 
         # If the user inputs are correct, runs the script.
@@ -300,7 +300,7 @@ while True:
             window.Refresh()
 
             # Calculate collection ID from collection name (the user input)
-            collection_id = config.ait_coll_dict[values["ait_collection"]]
+            collection_id = ait.ait_coll_dict[values["ait_collection"]]
 
             # For threading: run download_files() in a thread.
             os.chdir(values["input_folder"])
