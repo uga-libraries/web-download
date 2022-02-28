@@ -195,7 +195,7 @@ def download_files(input_directory, collection, window):
             # If there were no errors (code 0), verifies the correct size was downloaded from wget output.
             # If there was an error, saves the error to a log.
             if download_result.returncode == 0:
-                regex = re.match(".*saved \[([0-9]+)/([0-9]+)\]", str(download_result.stderr))
+                regex = re.match(".*saved \\[([0-9]+)/([0-9]+)]", str(download_result.stderr))
                 try:
                     if not regex.group(1) == regex.group(2):
                         add_error("Size downloaded is wrong", download_result)
@@ -249,7 +249,7 @@ labels = [[sg.Text('Folder with CSVs', font=("roboto", 13))],
           [sg.Submit(key="submit", disabled=False), sg.Cancel()]]
 
 boxes = [[sg.Input(key="input_folder"), sg.FolderBrowse()],
-         [sg.Combo(list(ait.ait_coll_dict.keys()), key="ait_collection", default_value=ait.ait_coll_default)],
+         [sg.Combo(list(ait.AIT_COLL_DICT.keys()), key="ait_collection", default_value=ait.AIT_COLL_DEFAULT)],
          [sg.Text(font=("roboto", 1))],
          [sg.Text(font=("roboto", 13))]]
 
@@ -288,7 +288,7 @@ while True:
         # Collection name is required and must match one of the collections in the configuration file.
         if values["ait_collection"] == "":
             errors.append("Archive-It Collection cannot be blank.")
-        elif values["ait_collection"] not in ait.ait_coll_dict:
+        elif values["ait_collection"] not in ait.AIT_COLL_DICT:
             errors.append("Archive-It Collection is not one of the permitted values.")
 
         # If the user inputs are correct, runs the script.
@@ -300,7 +300,7 @@ while True:
             window.Refresh()
 
             # Calculate collection ID from collection name (the user input)
-            collection_id = ait.ait_coll_dict[values["ait_collection"]]
+            collection_id = ait.AIT_COLL_DICT[values["ait_collection"]]
 
             # For threading: run download_files() in a thread.
             os.chdir(values["input_folder"])
