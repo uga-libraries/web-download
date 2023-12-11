@@ -73,13 +73,35 @@ and what the results should be after using that as input in the download GUI.
     
 ### make_seed_folder() 
 
-1. Seed regex failure: logs and doesn’t to download [doesn't start with http, error in GUI is Could not make the seed folder: new URL pattern]
+1. Error: cannot calculate seed folder name
+   - Input CSV: seed urls that do not start with "http" or "https"
+   - Expected result:
+        - Log has "Could not make the seed folder: new URL pattern" for each seed
+        - No seed folder is made and nothing is downloaded
 
 
-2. Folder already exists: adds PDFs to it [make folder before running the script] 
+2. Folder name variations (folder is new)
+   - Input CSV: seed urls that begin with "http://" and "https://", that do and do not have / in the middle,
+     and that do or do not have / at the end
+   - Expected result:
+      - Makes the seed folders with the correct names
+      - Downloads everything in the report
+      - The log has no errors
 
 
-3. Characters that aren’t permitted: logs and doesn’t download [slashes are replaced, so what else causes a problem? Error in GUI is Couldn't make the seed folder: unpermitted character(s).]
+3. Folder of the name already exists
+   - Input directory: a folder with a file type report, and folders for every seed in the report with a PDF
+   - Expected result:
+      - Downloads everything in the report to the correct seed folder
+      - The original PDF is still in each folder
+      - The log has no errors
+
+
+4. Error: cannot make a folder by that name
+   - Input CSV: seed urls that include characters that are not permitted by Windows (*, ?, :)
+   - Expected result:
+      - Log has "Couldn't make the seed folder: unpermitted character(s)."
+      - No seed folder is made and nothing is downloaded
 
  
 ### get_file_name() 
