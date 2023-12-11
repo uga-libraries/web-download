@@ -34,9 +34,10 @@ To use this script for other formats, update how missing file extensions are ass
 
 ## Script Arguments
 
-```python /path/download_files.py```
+In a terminal window, type ```python path/download_files.py```,
+where "path" is the location of the download_files.py file on your computer.
 
-Running the script will open a GUI (graphical user interface) for users to enter two points of information:
+This will open a GUI (graphical user interface) for users to enter two points of information:
 * Folder with CSVs from Archive-It with the files to be downloaded.
 * Title of the Archive-It collection that the files are part of.
 
