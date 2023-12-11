@@ -39,7 +39,7 @@ The Head of Digital Stewardship maintains and improves the script at the request
    b. Click "application/pdf" in the File Type table. Use the filter box to find it if the list is long.
    
    c. Click "Download File Type List", which downloads a CSV with the PDF metadata. 
-      It will include the URL, Size, Is Duplicate (0 means no, 1 means yes), and seed ID.
+      It will include the PDF URL, Size, Is Duplicate (0 means no, 1 means yes), and seed URL.
    
 
 3. Save all the CSVs to a single folder. 
