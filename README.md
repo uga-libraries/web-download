@@ -30,6 +30,10 @@ which is already in the Path, but the Python script cannot access wget in this l
 
 To install wget in Linux or Mac: <https://www.gnu.org/software/wget/>
 
+Verify the information in ait_collections.py is correct.
+It contains the default Archive-It collection for the download,
+as well as a list of all Archive-It collections for UGA.
+
 To use this script for other formats, update how missing file extensions are assigned in get_file_name().
 
 ## Script Arguments
