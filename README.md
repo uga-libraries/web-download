@@ -2,15 +2,12 @@
 
 ## Overview
 
-Downloads individual PDF files from saved Archive-It crawls to provide access to Georgia Government Publications via the Digital Library of Georgia.
-To use this script for other formats, update how missing file extensions are assigned in get_file_name().
+Downloads individual PDF files from saved Archive-It crawls using the Archive-It File Type report.
+Files are saved in folders named with the website (seed) url.
+It can download PDFs from many websites, but only one Archive-It collection, at a time.
 
-Script Result: 
-One folder for each website (seed), named with a modified version of the URL that removes characters not permitted in folder names.
-Each folder contains all the PDFs from the CSV(s) for that website. PDFs are named with the last portion of their URL and a sequential number is added if another file of the same name has already been downloaded. If Archive-It detects a file is an exact duplicate, rather than a separate file with the same name, it will not be downloaded.
-A Download Log (download_log.csv) is always created, which records if the correct number of PDFs were downloaded and if any errors were found.
-If there were errors, an Error Log (error_log.csv) is created with the error information for each file with errors. 
-The outputs of the script are all saved to the same folder as the Archive-It CSVs.
+At UGA, PDFs are downloaded to provide access to Georgia government publications via the Digital Library of Georgia.
+
 
 ## Getting Started
 
@@ -31,6 +28,8 @@ You need administrative privileges on your machine for the script to be able to 
 
 To install wget in Linux or Mac: <https://www.gnu.org/software/wget/>
 
+To use this script for other formats, update how missing file extensions are assigned in get_file_name().
+
 ## Script Arguments
 
 ```python /path/download_files.py```
@@ -40,6 +39,12 @@ Running the script will open a GUI (graphical user interface) for users to enter
 * Title of the Archive-It collection that the files are part of.
 
 ## Workflow
+Script Result: 
+One folder for each website (seed), named with a modified version of the URL that removes characters not permitted in folder names.
+Each folder contains all the PDFs from the CSV(s) for that website. PDFs are named with the last portion of their URL and a sequential number is added if another file of the same name has already been downloaded. If Archive-It detects a file is an exact duplicate, rather than a separate file with the same name, it will not be downloaded.
+A Download Log (download_log.csv) is always created, which records if the correct number of PDFs were downloaded and if any errors were found.
+If there were errors, an Error Log (error_log.csv) is created with the error information for each file with errors. 
+The outputs of the script are all saved to the same folder as the Archive-It CSVs.
 
 1. Crawl websites with the desired PDFs using Archive-It and save any test crawls.
    
