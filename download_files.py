@@ -1,5 +1,18 @@
-"""Downloads individual PDF files from saved Archive-It crawls to provide access to
-Georgia Government Publications via the Digital Library of Georgia."""
+"""Downloads individual PDF files from saved Archive-It crawls.
+
+At UGA, this script is used by MAGIL to provide access to Georgia Government Publications
+via the Digital Library of Georgia.
+It includes a GUI for entering script parameters and viewing script progress.
+
+Parameters:
+    input_folder : path to the folder with AIT CSVs files listing the PDF URls.
+    ait_collection : AIT collection the websites are part of (all must be in the same one).
+
+Returns:
+    One folder for each website (seed), with the PDFs from that seed.
+    A download_log.csv file with if the correct number of PDFs were downloaded and a summary of any other error.
+    A error_log.csv file with information about each error, if there were any errors.
+"""
 
 import csv
 import gc
