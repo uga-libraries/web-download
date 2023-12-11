@@ -106,17 +106,49 @@ and what the results should be after using that as input in the download GUI.
  
 ### get_file_name() 
 
-1. Doesn’t have a slash in it at all: uses whole URL
-2. Ends in doc.pdf/download: uses doc.pdf
-3. Ends in /report_download.pdf: uses report_download.pdf
-4. Ends in /gov_doc.pdf: uses gov_doc.pdf
-5. Convert name.PDF to name.pdf
-6. Convert namepdf to name.pdf
-7. Convert namePDF to name.pdf
-8. Convert name.doc to name.doc.pdf
-9. Convert name to name.pdf
-10. Convert name*name.pdf to name_name.pdf
-11. Add number to repeated file name (when not a duplicate file)
+1. Use entire URL
+   - Input CSV: file URL does not contain a slash
+   - Expected result:
+      - Downloads everything in the report with the correct file name (entire URL)
+      - The log has no errors
+
+
+2. URL ends with /download
+   - Input CSV: file URLs that end with /text/download
+   - Expected result:
+      - Downloads everything in the report with the correct file name ("text")
+      - The log has no errors
+
+   
+3. Typical URL
+   - Input CSV: file URL includes at least one slash from http:// and does not end with /download
+   - Expected result:
+      - Downloads everything in the report with the correct file name (whatever is after the last /)
+      - The log has no errors
+
+   
+4. Adding PDF extension
+   - Input CSV: includes at least one URL that will become a report named with each of the following patterns: 
+     name.PDF, namepdf, namePDF, name.doc, name, name.pdf
+   - Expected result:
+      - Downloads everything in the report with the correct file extension (.pdf)
+      - The log has no errors
+
+
+5. Replacing illegal characters
+   - Input CSV: includes at least one URL with each of the following characters in the part 
+     which will become the report name: / \ * ? " < > |
+   - Expected result:
+      - Downloads everything in the report with the correct file name (characters replaced by underscores)
+      - The log has no errors
+
+
+5. Repeated file names (not duplicate files)
+   - Input CSV: includes 2 or more URLs that will become the same report name and have 0 in the is duplicate column
+   - Expected result:
+      - Downloads the correct number of PDFs with the same name and adds the correct number to the end of each 
+        (one has no number, and the rest have whole numbers starting with _1 before the file extension)
+      - The log has no errors
 
 ### add_error()
 
