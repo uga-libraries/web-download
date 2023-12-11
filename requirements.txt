@@ -1,0 +1,1 @@
+PySimpleGui~=4.60.5
