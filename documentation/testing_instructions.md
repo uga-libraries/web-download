@@ -5,10 +5,7 @@
 Use these instructions to test that the script is working correctly.
 
 ## Script Overall
-Notes on what to test for [give CSVs to use so that can describe the expected results]:
-- Skipping duplicates identified by Archive-It [1]
-- Handling duplicate file names
-- Something with errors
+Select a few CSVs to use for regular testing.
 
 Also test the inputs:
 - input_folder blank ["Folder with CSVs can't be blank"]
@@ -41,28 +38,38 @@ Testing (expected results)
 These tests cover variations and error handling for individual functions, 
 beyond what the tests for the script overall accomplish.
 
+Each test includes what to use as the input directory or Archive-It file type CSV 
+and what the results should be after using that as input in the download GUI.
+
 ### get_download_urls()
 
-1. Input folder is empty.  
-   - Make any empty folder.  
-   - Run the script.  
-   - Confirm there is an error in the GUI ("No URLs were found to be downloaded.") and that you can enter new input.
+1. Input folder is empty
+   - Input directory: Make any empty folder  
+   - Expected result: GUI has "No URLs were found to be downloaded."
    
 
-2. Input folder has unexpected (not CSV) content.
-   - Make a folder that contains: 
-       - another folder
-       - a file that is not a CSV 
-       - a CSV that is an Archive-It file type report
-   - Confirm that it downloads everything in the Archive-It CSV. 
-   - Confirm that it does nothing (not in logs, nothing downloaded, no error messages) for the other files and folder.
+2. Input folder has unexpected (not CSV) content
+   - Input directory: a folder that contains another folder, a text file, and a file type report
+   - Expected result:
+        - It does nothing (not in logs, nothing downloaded, no error messages) for the folder or text file
+        - Downloads everything in the Archive-It CSV, and the log has no errors
 
-3. Input folder has unexpected CSV.
-   - Make a folder that contains: 
-       - a file that is a CSV but not an Archive-It file type report
-       - a CSV that is an Archive-It file type report
-   - Confirm the GUI has "This CSV is not formatted correctly and will be skipped" for the non-file type report.
-   - Confirm that it downloads everything in the Archive-It CSV.
+
+3. Input folder has unexpected CSV
+   - Input directory: a folder that contains a CSV file that is not a file type report, and a CSV file that is
+   - Expected result:
+        - GUI has "This CSV is not formatted correctly and will be skipped" for the non-file type report
+        - Downloads everything in the Archive-It CSV, and the log has no errors
+   
+ 
+4. Duplicate PDFs
+    - Input CSV: a file type report that includes "1" in the is_duplicate column for some PDFs
+    - Expected result: Downloads everything in the report except for the PDFs with "1", and the log has no errors
+
+
+5. PDF per seed variation
+    - Input CSV: a file type report with 1 PDF per seed and another with multiple PDFs per seed
+    - Expected result: Downloads everything in both reports, and the log has no errors
     
 ### make_seed_folder() 
 
