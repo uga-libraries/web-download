@@ -13,8 +13,8 @@ At UGA, PDFs are downloaded to provide access to Georgia government publications
 
 ### Dependencies
 
-- PySimpleGui, a Python library for creating GUIs. To install, in a terminal type: `pip install PySimpleGUI`
-- wget, for downloading content using a URL. 
+- [PySimpleGui](https://www.pysimplegui.org/en/latest/) - a Python library for creating user interfaces.
+- [wget](https://www.gnu.org/software/wget/) - for downloading content using a URL. 
 
 ### Installation
 
