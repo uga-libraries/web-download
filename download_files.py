@@ -5,8 +5,8 @@ via the Digital Library of Georgia.
 It includes a GUI for entering script parameters and viewing script progress.
 
 Parameters:
-    input_folder : path to the folder with AIT CSVs files listing the PDF URls.
-    ait_collection : AIT collection the websites are part of (all must be in the same one).
+    input_folder : path to the folder with Archive-It CSVs files listing the PDF URls
+    ait_collection : Archive-It collection the websites are part of (all must be in the same one)
 
 Returns:
     One folder for each website (seed), with the PDFs from that seed.
@@ -30,12 +30,20 @@ SCRIPT_THREAD = '-SCRIPT_THREAD-'
 
 
 def download_files(input_directory, collection, window):
-    """Gets the PDF URLs from each CSV in the input folder and
-    downloads them to a folder named with the seed."""
+    """Gets the PDF URLs from each CSV in the input folder and downloads them to a folder named with the seed.
+
+    Parameters:
+        input_directory : path to the folder with Archive-It CSV files listing the PDF URLs
+        collection : Archive-It collection that all CSVs are part of
+        window : GUI data
+    """
 
     def get_download_urls():
         """Gets the PDF URLs from each CSV in the input folder and saves them to a dictionary.
-        The dictionary keys are the seeds and values are a list of URLS for each seed."""
+
+        Returns:
+            A dictionary with seed (website) as the key and a list of URLs for each seed as the value.
+        """
 
         # Dictionary for the results.
         download_urls_dict = {}
@@ -71,7 +79,14 @@ def download_files(input_directory, collection, window):
         return download_urls_dict
 
     def make_seed_folder(seed):
-        """Makes a folder for the seed and changes the current directory to that folder."""
+        """Makes a folder for the seed and changes the current directory to that folder.
+
+        Parameters:
+            seed : URL for the seed website
+
+        Returns:
+            The seed folder name, which is the URL without http(s):// and slashes replaced by underscores.
+        """
 
         # Prints the seed name to the GUI to show the script's progress.
         print("Starting next seed:", seed)
@@ -100,7 +115,14 @@ def download_files(input_directory, collection, window):
         return seed_folder
 
     def get_file_name(file_url):
-        """Makes the filename based on the file URL."""
+        """Makes the filename based on the file URL.
+
+        Parameters:
+            file_url : URL for the PDF to be downloaded
+
+        Returns:
+            File name
+        """
 
         # Select the portion of the URL to use for the name.
         #   -If the URL doesn't have multiple parts (unlikely), the whole URL is the name.
@@ -146,7 +168,12 @@ def download_files(input_directory, collection, window):
         return name
 
     def add_error(message, output):
-        """Makes an error log, if one doesn't already exists, and adds the data to it."""
+        """Makes an error log, if one doesn't already exists, and adds the data to it.
+
+        Parameters:
+            message : standard text to include in the log about the error
+            output : output from the process that generated the error
+        """
 
         error_log_path = os.path.join(input_directory, "error_log.csv")
 
