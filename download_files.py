@@ -1,4 +1,4 @@
-"""Downloads individual PDF files from saved Archive-It crawls.
+"""Download individual PDF files from saved Archive-It crawls.
 
 At UGA, this script is used by MAGIL to provide access to Georgia Government Publications
 via the Digital Library of Georgia.
@@ -30,7 +30,7 @@ SCRIPT_THREAD = '-SCRIPT_THREAD-'
 
 
 def download_files(input_directory, collection, window):
-    """Gets the PDF URLs from each CSV in the input folder and downloads them to a folder named with the seed url.
+    """Get the PDF URLs from each CSV in the input folder and downloads them to a folder named with the seed url.
 
     Parameters:
         input_directory : path to the folder with Archive-It CSV files listing the PDF URLs
@@ -39,7 +39,7 @@ def download_files(input_directory, collection, window):
     """
 
     def get_download_urls():
-        """Gets the PDF URLs from each CSV in the input folder and saves them to a dictionary.
+        """Get the PDF URLs from each CSV in the input folder and save them to a dictionary.
 
         Returns:
             A dictionary with seed (website) as the key and a list of PDF URLs for each seed as the value.
@@ -82,7 +82,7 @@ def download_files(input_directory, collection, window):
         return download_urls_dict
 
     def make_seed_folder(seed):
-        """Makes a folder for the seed (website) and changes the current directory to that folder.
+        """Make a folder for the seed (website) and change the current directory to that folder.
 
         Parameters:
             seed : URL for the seed (website)
@@ -118,7 +118,7 @@ def download_files(input_directory, collection, window):
         return seed_folder
 
     def get_file_name(file_url):
-        """Constructs the filename based on the file URL.
+        """Construct the file name based on the file URL.
 
         Parameters:
             file_url : URL for the PDF to be downloaded
@@ -172,7 +172,7 @@ def download_files(input_directory, collection, window):
         return name
 
     def add_error(message, output):
-        """Makes an error log, if one doesn't already exists, and adds the data for this error to it.
+        """Make an error log, if one doesn't already exists, and add the data for this error to it.
 
         Parameters:
             message : standard text to include in the log about the error
