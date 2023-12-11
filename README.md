@@ -97,4 +97,11 @@ The outputs of the script are all saved to the same folder as the Archive-It CSV
 11. Review the Download Log and Error Log (if created) for any problems with the download.
 
 ## Author
+
 Adriane Hanson, Head of Digital Stewardship, UGA Libraries
+
+## History
+
+This script was developed for Sarah Causey in MAGIL in 2022, after they transitioned from HTTrack to Archive-It for web crawling.
+HTTrack automatically downloaded individual files, including PDFs, so that they could be added to DLG when warranted.
+Archive-It downloads the entire website as a WARC, so we needed a different way to extract the PDF files.
