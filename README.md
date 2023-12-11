@@ -24,7 +24,9 @@ To install wget in Windows:
 3. Add the folder with wget.exe to your Path variable (under Settings, Environment Variables).
 4. Test by opening a terminal window and typing `wget -h`. The wget options should appear.
 
-You need administrative privileges on your machine for the script to be able to use wget. Additionally, Windows install instructions recommend saving to the System32 folder, which is already in the Path, but the Python script cannot access wget in this location.
+You need administrative privileges on your machine for the script to be able to use wget. 
+Additionally, Windows install instructions recommend saving to the System32 folder, 
+which is already in the Path, but the Python script cannot access wget in this location.
 
 To install wget in Linux or Mac: <https://www.gnu.org/software/wget/>
 
@@ -41,7 +43,9 @@ Running the script will open a GUI (graphical user interface) for users to enter
 ## Workflow
 Script Result: 
 One folder for each website (seed), named with a modified version of the URL that removes characters not permitted in folder names.
-Each folder contains all the PDFs from the CSV(s) for that website. PDFs are named with the last portion of their URL and a sequential number is added if another file of the same name has already been downloaded. If Archive-It detects a file is an exact duplicate, rather than a separate file with the same name, it will not be downloaded.
+Each folder contains all the PDFs from the CSV(s) for that website. 
+PDFs are named with the last portion of their URL and a sequential number is added if another file of the same name has already been downloaded. 
+If Archive-It detects a file is an exact duplicate, rather than a separate file with the same name, it will not be downloaded.
 A Download Log (download_log.csv) is always created, which records if the correct number of PDFs were downloaded and if any errors were found.
 If there were errors, an Error Log (error_log.csv) is created with the error information for each file with errors. 
 The outputs of the script are all saved to the same folder as the Archive-It CSVs.
@@ -67,7 +71,8 @@ The outputs of the script are all saved to the same folder as the Archive-It CSV
 5. Verify the Archive-It collection for these PDFs is in the ait_collections.py file.
    
 
-6. Start the script by opening a terminal window and typing: `python path/download_files.py`, where path is the location of the download_files.py file on your computer.
+6. Start the script by opening a terminal window and typing: `python path/download_files.py`, 
+   where path is the location of the download_files.py file on your computer.
    
 
 7. A window (the script GUI) will open. Provide the following input:
@@ -77,10 +82,12 @@ The outputs of the script are all saved to the same folder as the Archive-It CSV
    b. The Archive-It collection that the CSVs are from.
 
 
-8. If there are any issues with the provided input, a message will appear in the GUI and you can try again. Otherwise, the GUI will show "Please wait while the PDFs you requested are downloaded..."
+8. If there are any issues with the provided input, a message will appear in the GUI and you can try again. 
+   Otherwise, the GUI will show "Please wait while the PDFs you requested are downloaded..."
 
 
-9. The script download progress (each seed) is displayed in the GUI. When it is done, it will show "Downloading is complete."
+9. The script download progress (each seed) is displayed in the GUI. 
+   When it is done, it will show "Downloading is complete."
 
 
 10. Use the GUI to start another download or close the window to end the script.
