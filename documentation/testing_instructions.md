@@ -3,35 +3,58 @@
 ## Overview
 
 Use these instructions to test that the script is working correctly.
+TBD: store CSVs for testing in the repo that meet the different test criteria for predictable test results.
 
 ## Script Overall
-Select a few CSVs to use for regular testing.
 
-Also test the inputs:
-- input_folder blank ["Folder with CSVs can't be blank"]
-- input_folder not a valid path ["Folder with CSVs path is not correct."]
-- ait_collection blank ["Archive-It Collection cannot be blank"]
-- ait_collection not expected value ["Archive-It Collection is not one of the permitted values"]
+Testing the correct operation of the script:
 
-Using Georgia Politics instead of GGP to get more variations. Now that GGP has crawled more, replace with theirs.
+1. Download a sample of the file type CSVs from Archive-It.
+2. Delete most of the rows from the reports for faster testing,
+   leaving some seeds with multiple PDFs, some duplicates, and some repeated names.
+3. Run the script and verify what prints in the GUI:
+    - "Please wait while the PDFs you requested are downloaded."
+    - "Starting next seed: SEED NAME" (for each seed)  
+    - "Downloading is complete"
+4. Check the results
+    - All seed folders were made and have the expected names
+    - All PDFs were downloaded and have the expected names
+    - download_log.csv has no errors
+    - errors_log.csv was not made
 
-Testing (CSVs) - Georgia Politics (checked all reports for non-social media and no /download) 
+Testing error handling for GUI inputs:
 
-- 940298: one seed, no duplicates 
-- 1010708: two seeds, duplicate, 2 files with same name 
-- 1436714: one seed with middle slash, no duplicates [removed – seed fine, URLS not] 
+1. Leave the Folder with CSVs field blank. Expected result:
+    - Pop up message: "There is a problem with the provided information. Check the GUI for details"
+    - In the GUI:   
+        - "The app could not run. Please correct the following information:"
+        - "Folder with CSVs can't be blank"
 
- 
-Testing (expected results) 
 
-- gagop.org 
-   - GAGOP-State-Party-Rules-Adoped-6-16-19.pdf 
-   - GAGOP-State-Party-Rules-Adoped-6-16-19_1.pdf 
-- votedeborahgonzalez.com 
-   - SB336-MEMO-GOV.pdf 
-- www.georgiademocrat.org 
-   - DPGcharter1.pdf 
-   - VotingGuide_korean.pdf 
+2. Type "path/error" into Folder with CSVs field. Expected result:
+    - Pop up message: "There is a problem with the provided information. Check the GUI for details"
+    - In the GUI:   
+        - "The app could not run. Please correct the following information:"
+        - "Folder with CSVs path is not correct."   
+
+
+3. Delete the text in Archive-It Collection field. Expected result:
+    - Pop up message: "There is a problem with the provided information. Check the GUI for details"
+    - In the GUI:   
+        - "The app could not run. Please correct the following information:"
+        - "Archive-It Collection cannot be blank"
+
+4. Type "error" into Archive-It Collection field. Expected result:
+    - Pop up message: "There is a problem with the provided information. Check the GUI for details"
+    - In the GUI:   
+        - "The app could not run. Please correct the following information:"
+        - "Archive-It Collection is not one of the permitted values"   
+
+5. Make an error in both fields. Expected result:
+    - Pop up message: "There is a problem with the provided information. Check the GUI for details"
+    - In the GUI:   
+        - "The app could not run. Please correct the following information:"
+        - Both of the error messages
 
 ## Specific Functions
 
