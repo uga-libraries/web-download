@@ -76,7 +76,7 @@ and what the results should be after using that as input in the download GUI.
 1. Error: cannot calculate seed folder name
    - Input CSV: seed urls that do not start with "http" or "https"
    - Expected result:
-        - Log has "Could not make the seed folder: new URL pattern" for each seed
+        - download_log.csv has "Could not make the seed folder: new URL pattern" in the "Errors" column
         - No seed folder is made and nothing is downloaded
 
 
@@ -86,7 +86,7 @@ and what the results should be after using that as input in the download GUI.
    - Expected result:
       - Makes the seed folders with the correct names
       - Downloads everything in the report
-      - The log has no errors
+      - download_log.csv has no errors
 
 
 3. Folder of the name already exists
@@ -94,13 +94,13 @@ and what the results should be after using that as input in the download GUI.
    - Expected result:
       - Downloads everything in the report to the correct seed folder
       - The original PDF is still in each folder
-      - The log has no errors
+      - download_log.csv has no errors
 
 
 4. Error: cannot make a folder by that name
    - Input CSV: seed urls that include characters that are not permitted by Windows (*, ?, :)
    - Expected result:
-      - Log has "Couldn't make the seed folder: unpermitted character(s)."
+      - download_log.csv has "Couldn't make the seed folder: unpermitted character(s)." in the "Errors" column
       - No seed folder is made and nothing is downloaded
 
  
@@ -110,21 +110,21 @@ and what the results should be after using that as input in the download GUI.
    - Input CSV: file URL does not contain a slash
    - Expected result:
       - Downloads everything in the report with the correct file name (entire URL)
-      - The log has no errors
+      - download_log.csv has no errors
 
 
 2. URL ends with /download
    - Input CSV: file URLs that end with /text/download
    - Expected result:
       - Downloads everything in the report with the correct file name ("text")
-      - The log has no errors
+      - download_log.csv has no errors
 
    
 3. Typical URL
    - Input CSV: file URL includes at least one slash from http:// and does not end with /download
    - Expected result:
       - Downloads everything in the report with the correct file name (whatever is after the last /)
-      - The log has no errors
+      - download_log.csv has no errors
 
    
 4. Adding PDF extension
@@ -132,7 +132,7 @@ and what the results should be after using that as input in the download GUI.
      name.PDF, namepdf, namePDF, name.doc, name, name.pdf
    - Expected result:
       - Downloads everything in the report with the correct file extension (.pdf)
-      - The log has no errors
+      - download_log.csv has no errors
 
 
 5. Replacing illegal characters
@@ -140,7 +140,7 @@ and what the results should be after using that as input in the download GUI.
      which will become the report name: / \ * ? " < > |
    - Expected result:
       - Downloads everything in the report with the correct file name (characters replaced by underscores)
-      - The log has no errors
+      - download_log.csv has no errors
 
 
 5. Repeated file names (not duplicate files)
@@ -148,7 +148,7 @@ and what the results should be after using that as input in the download GUI.
    - Expected result:
       - Downloads the correct number of PDFs with the same name and adds the correct number to the end of each 
         (one has no number, and the rest have whole numbers starting with _1 before the file extension)
-      - The log has no errors
+      - download_log.csv has no errors
 
 ### add_error()
 
@@ -161,10 +161,32 @@ Error handling to test if switch to unit tests for all functions:
 - Test for get_download_urls() currently covers empty to_download dictionary.
 - Test for make_seed_folder() currently covers AttributeError and OSError
 
-wget errors 
-[wget exit codes](https://www.man7.org/linux/man-pages/man1/wget.1.html)
-1. Downloaded size doesn’t match [Error Size downloaded is wrong, download log has "Download errors found"] 
-2. Downloaded size cannot be calculated [Can't calculate size downloaded, download log has "Download errors found"] 
-3. Some other error [Error while downloading] - do by giving collection ID that isn't correct: URL is wrong so logged as error 8
+The tests for the script overall cover the typical functioning of download_files().
 
-4. Wrong number of PDFs downloaded: file_match in download log has "Errors found"
+1. Error: downloaded size wrong
+   - TBD: unclear how to cause error, which compares the size expected and downloaded from the wget output
+   - Expected result:
+      - Downloads everything in the report
+      - download_log.csv has "Download errors found" in the "Errors" column
+      - error_log.csv has "Size downloaded is wrong"
+   
+
+2. Error: download size not calculated
+   - TBD: unclear how to cause error, which is if the wget output is not the expected pattern
+   - Expected result:
+      - Downloads everything in the report
+      - download_log.csv has "Download errors found" in the "Errors" column
+      - errors_log.csv has "Can't calculate size downloaded"
+   
+
+3. Error: download URL wrong 
+   - Input CSV: URLs that are not actually files in UGA's Archive-It account
+   - Expected result:
+       - Nothing is downloaded
+       - download_log.csv has "Download errors found" in the "Errors" column
+       - errors_log.csv has "Error when downloading, 8"
+
+4. Error: wrong number of PDFs downloaded
+   - TBD: unclear how to cause error, which compares the number of PDFs to the number in the dictionary
+   - Expected result:
+      - download_log.csv has "Errors found" in the "Correct Amount Downloaded?" column
