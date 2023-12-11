@@ -95,3 +95,6 @@ The outputs of the script are all saved to the same folder as the Archive-It CSV
 
 
 11. Review the Download Log and Error Log (if created) for any problems with the download.
+
+## Author
+Adriane Hanson, Head of Digital Stewardship, UGA Libraries
