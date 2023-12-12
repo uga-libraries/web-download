@@ -1,5 +1,6 @@
-"""
-Archive-it (AIT) collection title and identifiers. It is used to:
+"""UGA Archive-It (AIT) collection titles and identifiers.
+
+This information is used to:
     * Populate the menu in the GUI
     * Verify there were no errors when providing the collection to the script
     * Translate the collection name (easier for users) to the collection ID for making URLs

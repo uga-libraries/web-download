@@ -1,0 +1,3 @@
+Error,WGET Command,Return Code,STDERR
+Error when downloading,"wget -O rprt-frm.pdf https://wayback.archive-it.org/15678/3/https://www.audits.ga.gov/NALGAD/Files/rprt-frm.pdf",4,Network failure
+Error when downloading,"wget -O IERB_Complaint_form.pdf https://wayback.archive-it.org/15678/3/https://www.audits.ga.gov/NALGAD/Files/IERB_Complaint_form.pdf",4,Network failure

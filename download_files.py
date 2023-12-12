@@ -1,5 +1,18 @@
-"""Downloads individual PDF files from saved Archive-It crawls to provide access to
-Georgia Government Publications via the Digital Library of Georgia."""
+"""Download individual PDF files from saved Archive-It crawls.
+
+At UGA, this script is used by MAGIL to provide access to Georgia Government Publications
+via the Digital Library of Georgia.
+It includes a GUI for entering script parameters and viewing script progress.
+
+Parameters:
+    input_folder : path to the folder with Archive-It CSVs files listing the PDF URls
+    ait_collection : Archive-It collection the websites are part of (all must be in the same one)
+
+Returns:
+    One folder for each website (seed), with the PDFs from that seed.
+    A download_log.csv file with if the correct number of PDFs were downloaded and a summary of any other error.
+    An error_log.csv file with details about each wget error, if there were any errors.
+"""
 
 import csv
 import gc
@@ -17,23 +30,32 @@ SCRIPT_THREAD = '-SCRIPT_THREAD-'
 
 
 def download_files(input_directory, collection, window):
-    """Gets the PDF URLs from each CSV in the input folder and
-    downloads them to a folder named with the seed."""
+    """Get the PDF URLs from each CSV in the input folder and downloads them to a folder named with the seed url.
+
+    Parameters:
+        input_directory : path to the folder with Archive-It CSV files listing the PDF URLs
+        collection : Archive-It collection that all CSVs are part of
+        window : GUI data
+    """
 
     def get_download_urls():
-        """Gets the PDF URLs from each CSV in the input folder and saves them to a dictionary.
-        The dictionary keys are the seeds and values are a list of URLS for each seed."""
+        """Get the PDF URLs from each CSV in the input folder and save them to a dictionary.
 
-        # Dictionary for the results.
+        Returns:
+            A dictionary with seed (website) as the key and a list of PDF URLs for each seed as the value.
+        """
+
+        # Makes a dictionary for the results.
         download_urls_dict = {}
 
-        # Reads every CSV in the CSV directory.
+        # Finds and reads every CSV in the input directory.
         for input_csv in os.listdir("."):
 
-            # Skips folders and files that aren't CSVs.
+            # Skips files that aren't CSVs and skips folders.
             if not input_csv.endswith(".csv") or os.path.isdir(input_csv):
                 continue
 
+            # Reads the CSV.
             with open(input_csv) as csvfile:
                 data = csv.reader(csvfile)
 
@@ -44,27 +66,36 @@ def download_files(input_directory, collection, window):
                     print("This CSV is not formatted correctly and will be skipped:", input_csv)
                     continue
 
-                # Adds the seed to the download_urls dictionary if it isn't already present.
-                # Adds the URL to the download_urls dictionary if it isn't a duplicate (value of 1).
+                # Updates the download urls dictionary with data about each PDF URL.
                 for row in data:
                     url, size, is_duplicate, seed = row
+                    # Does not add the PDF URL to the dictionary if it is a duplicate (value of 1).
                     if is_duplicate == "1":
                         continue
+                    # Adds the PDF URL if the seed is already in the dictionary.
                     if seed in download_urls_dict:
                         download_urls_dict[seed].append(url)
+                    # Adds the seed URL and PDF URL to the dictionary if the seed isn't already present.
                     else:
                         download_urls_dict[seed] = [url]
 
         return download_urls_dict
 
     def make_seed_folder(seed):
-        """Makes a folder for the seed and changes the current directory to that folder."""
+        """Make a folder for the seed (website) and change the current directory to that folder.
+
+        Parameters:
+            seed : URL for the seed (website)
+
+        Returns:
+            The seed (website) folder name, which is the URL without http(s):// and slashes replaced by underscores.
+        """
 
         # Prints the seed name to the GUI to show the script's progress.
         print("Starting next seed:", seed)
 
         # Makes a version of the seed URL which can be used for a folder name.
-        # Removes http:// or https://, / from the end if present, and replaces other / with _
+        # Removes http:// or https://, removes / from the end if present, and replaces any other / with _
         try:
             regex = re.match("https?://(.*?)/?$", seed)
             seed_folder = regex.group(1)
@@ -83,15 +114,22 @@ def download_files(input_directory, collection, window):
         except OSError:
             raise OSError
 
-        # Return seed folder name, which is needed later to check for completeness
+        # Returns the seed folder name, which is needed later to check for completeness.
         return seed_folder
 
     def get_file_name(file_url):
-        """Makes the filename based on the file URL."""
+        """Construct the file name based on the file URL.
 
-        # Select the portion of the URL to use for the name.
+        Parameters:
+            file_url : URL for the PDF to be downloaded
+
+        Returns:
+            File name
+        """
+
+        # Selects the part of the URL to use for the name. URL parts are the texts divided by the slashes.
         #   -If the URL doesn't have multiple parts (unlikely), the whole URL is the name.
-        #   -If the last part of the URL is download, the previous part of the URL is the name.
+        #   -If the last part of the URL is "download", the previous part of the URL is the name.
         #   -Otherwise, the last part of the URL is the name.
         if "/" not in file_url:
             name = file_url
@@ -103,8 +141,10 @@ def download_files(input_directory, collection, window):
             name = regex.group(1)
 
         # Adds a ".pdf" file extension, if it doesn't have one.
-        # Some are caps, some don't have period, and some have no extension.
-        # Making all lowercase so case-insensitive systems don't think it is a duplicate.
+        #    - Some extensions are all caps (.PDF)
+        #    - Some have pdf or PDF but not the preceding period
+        #    - Some do not have a file extension
+        # Making all extensions lowercase so case-insensitive systems don't think it is a duplicate.
         if not name.endswith(".pdf"):
             if name.endswith(".PDF"):
                 name = name[:-4] + ".pdf"
@@ -118,23 +158,28 @@ def download_files(input_directory, collection, window):
             if character in name:
                 name = name.replace(character, "_")
 
-        # Checks if a file with this name has already been downloaded for this seed.
-        # Generic names are common and a numeric extension is added to keep the files different.
-        # If it is new, adds to the dictionary with a numeric extension of 1 (the next one to use).
-        # If it has been used, adds the number to the filename
-        # and updates the number in the dictionary.
+        # Adds a numerical extension to the file name if there is already another file of that name for this seed,
+        # since generic names like report are common for different files,
+        # and updates a dictionary that tracks the next sequential number to use for a file of that name.
         if name in downloads:
             number = downloads[name]
             downloads[name] += 1
             name = name[:-4] + "_" + str(number) + ".pdf"
+        # If this is the first time the file name is used, the next instance of the name will have an extension of 1.
         else:
             downloads[name] = 1
 
         return name
 
     def add_error(message, output):
-        """Makes an error log, if one doesn't already exists, and adds the data to it."""
+        """Make an error log, if one doesn't already exists, and add the data for this error to it.
 
+        Parameters:
+            message : standard text to include in the log about the error
+            output : output from wget, which generated the error
+        """
+
+        # Constructs the path to the error_log.csv, in the same folder as the Archive-It CSVs.
         error_log_path = os.path.join(input_directory, "error_log.csv")
 
         # Tests if a header row is needed, which is if the log does not already exists.
@@ -151,10 +196,10 @@ def download_files(input_directory, collection, window):
             error_log_write.writerow([message, output.args, output.returncode,
                                       output.stderr.decode('utf-8')])
 
-    # Gets the PDF URLs from each CSV in the input folder that will be downloaded.
+    # Gets a dictionary of the PDF URLs from each CSV in the input folder that will be downloaded.
     to_download = get_download_urls()
 
-    # If no URLs were located, communicates that the script has completed in the GUI dialogue box,
+    # If no URLs were located, prints that the script has completed in the GUI dialogue box,
     # ends the thread, and quits the script.
     if to_download == {}:
         print("\nNo URLs were found to be downloaded.")
@@ -162,14 +207,14 @@ def download_files(input_directory, collection, window):
         window.write_event_value('-SCRIPT_THREAD-', (threading.current_thread().name,))
         return
 
-    # Makes a log to save the results of each seed download.
+    # Makes a log to save the success of each seed download.
     download_log = open(os.path.join(input_directory, "download_log.csv"), "a", newline="")
     download_log_write = csv.writer(download_log)
     download_log_write.writerow(["Seed", "Expected PDFs", "Actual PDFs",
                                  "Correct Amount Downloaded?", "Errors"])
 
-    # For each seed, downloads the PDF for each URL in the list
-    # and saves it to a folder named with the seed.
+    # For each seed, downloads the PDF for each URL in the dictionary
+    # and saves it to a folder named with the seed URL.
     for seed in to_download:
 
         # Makes a folder for the seed and makes that the current directory.
@@ -191,17 +236,17 @@ def download_files(input_directory, collection, window):
         downloads = {}
         download_error = False
 
-        # Saves each PDF to the seed folder.
+        # Saves each PDF to its seed folder.
         for url in to_download[seed]:
 
-            # Makes the desired name for the file.
+            # Constructs the desired name for the file.
             filename = get_file_name(url)
 
-            # Makes the URL for the file saved in Archive-It.
+            # Constructs the download URL for the file saved in Archive-It.
             # The "3" is for the most recent capture.
             ait_url = f"https://wayback.archive-it.org/{collection}/3/{url}"
 
-            # Saves the PDF to the seed's directory, named with the desired name.
+            # Saves the PDF to the seed's folder, named with the desired name.
             download_result = subprocess.run(f'wget -O "{filename}" "{ait_url}"',
                                              shell=True, stderr=subprocess.PIPE)
 
@@ -243,7 +288,7 @@ def download_files(input_directory, collection, window):
     # Close the download log.
     download_log.close()
 
-    # Communicate that the script has completed in the GUI dialogue box.
+    # Prints that the script has completed in the GUI dialogue box.
     print("\nDownloading is complete.")
     window.Refresh()
 
@@ -297,13 +342,13 @@ while True:
         # Errors are saved to a list so all values can be tested prior to notifying the user.
         ERRORS = []
 
-        # CSV folder is required and must be a valid path.
+        # Input folder (contains the Archive-It CSVs) is required and must be a valid path.
         if VALUES["input_folder"] == "":
             ERRORS.append("Folder with CSVs can't be blank.")
         elif not os.path.exists(VALUES["input_folder"]):
             ERRORS.append("Folder with CSVs path is not correct.")
 
-        # Collection name is required and must match one of the collections in ait_collections.
+        # Collection name is required and must match one of the collections in ait_collections.py.
         if VALUES["ait_collection"] == "":
             ERRORS.append("Archive-It Collection cannot be blank.")
         elif VALUES["ait_collection"] not in ait.AIT_COLL_DICT:
@@ -312,9 +357,9 @@ while True:
         # If the user inputs are correct, runs the script.
         if len(ERRORS) == 0:
 
-            # Communicate that the script is starting to the user in the GUI dialogue box.
+            # Prints that the script is starting in the GUI dialogue box.
             print("\n-----------------------------------------------------------")
-            print("\nPlease wait while the PDFs you requested are downloaded...")
+            print("\nPlease wait while the PDFs you requested are downloaded.")
             WINDOW.Refresh()
 
             # Calculate collection ID from collection name (the user input)
@@ -327,7 +372,7 @@ while True:
                                                        COLLECTION_ID, WINDOW))
             PROCESSING_THREAD.start()
 
-            # Disable the submit button while make_csv() is running
+            # Disables the submit button while download_files() is running
             # so users can't start a new request before the first is done.
             WINDOW[f'{"submit"}'].update(disabled=True)
 
@@ -340,6 +385,6 @@ while True:
             print("\n".join(ERRORS))
             WINDOW.Refresh()
 
-    # If the user clicked cancel or the X on the GUI, quites the script.
+    # If the user clicked cancel or the X on the GUI, quits the script.
     if EVENT in ("Cancel", None):
         sys.exit()

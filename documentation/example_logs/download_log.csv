@@ -1,0 +1,3 @@
+Seed,Expected PDFs,Actual PDFs,Correct Amount Downloaded?,Errors
+https://www.audits.ga.gov/,4,3,Errors found,Download errors found
+https://ltgov.georgia.gov/,4,4,No errors found,No download errors found
