@@ -36,7 +36,7 @@ as well as a list of all Archive-It collections for UGA.
 
 To use this script for other formats, update how missing file extensions are assigned in get_file_name().
 
-## Script Arguments
+### Script Arguments
 
 In a terminal window, type ```python path/download_files.py```,
 where "path" is the location of the download_files.py file on your computer.
@@ -44,6 +44,11 @@ where "path" is the location of the download_files.py file on your computer.
 This will open a GUI (graphical user interface) for users to enter two points of information:
 * Folder with CSVs from Archive-It with the files to be downloaded.
 * Title of the Archive-It collection that the files are part of.
+
+### Testing
+
+Use the [Testing Instructions](documentation/testing_instructions.md) as a guide for designing tests
+or as a basis for creating unit tests for the functions.
 
 ## Workflow
 
