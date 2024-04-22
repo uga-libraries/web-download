@@ -80,7 +80,16 @@ def download_seed(seed_name, urls, collection):
         # Constructs the desired name for the file.
         # Also returns an updated version of downloads that includes the file.
         filename, downloads = get_file_name(url, downloads)
-        
+
+        # Constructs the download URL for the file saved in Archive-It.
+        # The "3" is for the most recent capture.
+        ait_url = f"https://wayback.archive-it.org/{collection}/3/{url}"
+
+        # Saves the PDF to the seed's folder, named with the desired name.
+        download_path = os.path.join(os.getcwd(), seed_folder_name, filename)
+        download_result = subprocess.run(f'wget -O "{download_path}" "{ait_url}"',
+                                         shell=True, stderr=subprocess.PIPE)
+
 
 def get_download_urls():
     """Get the PDF URLs from each CSV in the input folder and save them to a dictionary.
