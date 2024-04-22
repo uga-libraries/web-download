@@ -321,3 +321,7 @@ if __name__ == '__main__':
     # Downloads every PDF for each seed.
     for seed, url_list in to_download.items():
         download_seed(seed, url_list, ait_collection)
+
+    # Notification that the script is complete.
+    print('\nDownloading is complete. Downloaded files are in the folder provided as the script argument.')
+    print('Check the logs in the folder with the downloaded files for errors.')
