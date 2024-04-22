@@ -15,6 +15,7 @@ Returns:
 """
 import csv
 import os
+import re
 import sys
 
 
@@ -49,6 +50,23 @@ def check_arguments(arg_list):
         errors.append('Too many arguments. Maximum is input_folder (required) and ait_collection (optional).')
     
     return folder, collection, errors
+
+
+def download_seed(seed_name, urls):
+    """Download the publication at each url and save to a folder with the seed name"""
+
+    # Prints the script's progress.
+    print('Starting downloads for the next seed:', seed_name)
+
+    # Makes a folder for the seed in input_directory, unless the seed cannot be converted to a folder title.
+    try:
+        seed_folder_name = make_seed_folder(seed_name)
+    except AttributeError:
+        log([seed, 'n/a', 'n/a', 'n/a', 'Could not make the seed folder: new URL pattern.'])
+        return
+    except OSError:
+        log([seed, 'n/a', 'n/a', 'n/a', 'Could not make the seed folder: unpermitted character(s).'])
+        return
 
 
 def get_download_urls():
@@ -111,6 +129,36 @@ def log(row_list):
             l_write.writerow(row_list)
 
 
+def make_seed_folder(seed_name):
+    """Make a folder for the seed (website) and change the current directory to that folder.
+
+    Parameters:
+        seed_name : URL for the seed (website)
+
+    Returns:
+        The seed (website) folder name, which is the URL without http(s):// and slashes replaced by underscores.
+    """
+
+    # Makes a version of the seed URL which can be used for a folder name.
+    # Removes http:// or https://, removes / from the end if present, and replaces any other / with _
+    try:
+        regex = re.match("https?://(.*?)/?$", seed_name)
+        seed_folder = regex.group(1)
+        seed_folder = seed_folder.replace("/", "_")
+    except AttributeError:
+        raise AttributeError
+
+    # Tries to make a folder for the seed.
+    # If there is an error from illegal characters, no PDFs are downloaded for this seed.
+    try:
+        os.makedirs(seed_folder)
+    except OSError:
+        raise OSError
+
+    # Returns the seed folder name, which is needed later to check for completeness.
+    return seed_folder
+
+
 if __name__ == '__main__':
 
     # Verifies the provided script argument(s) are correct and assigns them to variables.
@@ -125,7 +173,7 @@ if __name__ == '__main__':
 
     # Notification that the script is starting.
     print('\nCorrect script input was provided.')
-    print('Please wait while the PDFs you requested are downloaded.')
+    print('Please wait while the PDFs you requested are downloaded.\n')
 
     # Gets a dictionary of the PDF URLs from each CSV in the input folder that will be downloaded.
     # If no URLs were located, prints that the script has completed and quits the script.
@@ -136,3 +184,7 @@ if __name__ == '__main__':
 
     # Makes a log to save the result of each seed download.
     log('header')
+
+    # Downloads every PDF for each seed.
+    for seed, url_list in to_download.items():
+        download_seed(seed, url_list)
