@@ -13,6 +13,7 @@ Returns:
     A download_log.csv file with if the correct number of PDFs were downloaded and a summary of any other error.
     An error_log.csv file with details about each wget error, if there were any errors.
 """
+import csv
 import os
 import sys
 
@@ -50,6 +51,50 @@ def check_arguments(arg_list):
     return folder, collection, errors
 
 
+def get_download_urls():
+    """Get the PDF URLs from each CSV in the input folder and save them to a dictionary.
+
+    Returns:
+        A dictionary with seed (website) as the key and a list of PDF URLs for each seed as the value.
+    """
+
+    # Makes a dictionary for the results.
+    download_urls_dict = {}
+
+    # Finds and reads every CSV in the input directory.
+    for input_csv in os.listdir('.'):
+
+        # Skips files that aren't CSVs and skips folders.
+        if not input_csv.endswith('.csv') or os.path.isdir(input_csv):
+            continue
+
+        # Reads the CSV.
+        with open(input_csv) as csvfile:
+            data = csv.reader(csvfile)
+
+            # Verifies the header has the expected values.
+            # If not, prints an error and starts the next CSV.
+            header = next(data)
+            if not header == ['url', 'size', 'is_duplicate', 'seed']:
+                print("This CSV is not formatted correctly and will be skipped:", input_csv)
+                continue
+
+            # Updates the download urls dictionary with data about each PDF URL.
+            for row in data:
+                url, size, is_duplicate, seed = row
+                # Does not add the PDF URL to the dictionary if it is a duplicate (value of 1).
+                if is_duplicate == '1':
+                    continue
+                # Adds the PDF URL if the seed is already in the dictionary.
+                if seed in download_urls_dict:
+                    download_urls_dict[seed].append(url)
+                # Adds the seed URL and PDF URL to the dictionary if the seed isn't already present.
+                else:
+                    download_urls_dict[seed] = [url]
+
+    return download_urls_dict
+
+
 if __name__ == '__main__':
 
     # Verifies the provided script argument(s) are correct and assigns them to variables.
@@ -60,7 +105,16 @@ if __name__ == '__main__':
         for error in errors_list:
             print(f'  * {error}')
         sys.exit(1)
+    os.chdir(input_folder)
 
     # Notification that the script is starting.
     print('\nCorrect script input was provided.')
     print('Please wait while the PDFs you requested are downloaded.')
+
+    # Gets a dictionary of the PDF URLs from each CSV in the input folder that will be downloaded.
+    # If no URLs were located, prints that the script has completed and quits the script.
+    to_download = get_download_urls()
+    print(to_download)
+    if to_download == {}:
+        print('\nNo URLs were found to be downloaded. Script will end.')
+        sys.exit(1)
