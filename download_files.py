@@ -50,12 +50,13 @@ def check_arguments(arg_list):
     return folder, collection, errors
 
 
-# Verifies the provided script argument(s) are correct and assigns them to variables.
-# If there are errors, prints the errors and exits the script.
-input_folder, ait_collection, errors_list = check_arguments(sys.argv)
-if len(errors_list) > 0:
-    print('Please correct the following and run the script again:')
-    for error in errors_list:
-        print(f'  * {error}')
-    sys.exit(1)
-    
+if __name__ == '__main__':
+
+    # Verifies the provided script argument(s) are correct and assigns them to variables.
+    # If there are errors, prints the errors and exits the script.
+    input_folder, ait_collection, errors_list = check_arguments(sys.argv)
+    if len(errors_list) > 0:
+        print('Please correct the following and run the script again:')
+        for error in errors_list:
+            print(f'  * {error}')
+        sys.exit(1)
