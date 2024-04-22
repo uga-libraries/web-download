@@ -48,6 +48,13 @@ python C:/user/scripts/download_files.py "C:/user/GGP CSVs"
 Example for Activists and Advocates collection:  
 python C:/user/scripts/download_files.py C:/user/csv "Activist and Advocates"
 
+Terminal Tips:
+
+* Drag a file or folder onto the terminal window to make its path appear.
+* Put quotes around any paths that have spaces.
+* Make sure there is a space between each component of the command.
+* Use the up arrow key to see earlier commands you typed, e.g., if you need to fix a typo or run something again.
+
 ### Testing
 
 Use the [Testing Instructions](documentation/testing_instructions.md) as a guide for designing tests
