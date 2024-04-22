@@ -10,11 +10,15 @@ Use these instructions to test that the script is working correctly.
 This tests that the script is working as expected with typical input.
 
 Since the script is capturing PDFs from the most recent crawl of a website,
-the same CSV cannot be used every time.
+the same CSV cannot be used every time. 
+Websites with these variations in the past are noted in step one as a place to start. 
+Otherwise, you need to just download PDF format reports until you find something you can use.
 
-1. Download 3-5 file type CSVs from Archive-It.
-2. Delete most of the rows from the reports for faster testing,
-   leaving some seeds with multiple PDFs, some duplicates, some where the last part of the path is download, and some repeated names.
+1. Download 3-5 file type CSVs from Archive-It. Variations to include:
+    - Duplicate PDFs (CSV has 1 for Is Duplicate): try https://www.dot.ga.gov or https://ethics.ga.gov/
+    - Last part of the PDF URL is "Download": try https://ada.georgia.gov/ or https://dbhdd.georgia.gov
+    - Repeated file name that isn't a duplicate: try https://gastateparks.org
+2. Delete all but 1-3 rows (small sizes if possible) from each reports for faster testing.
 3. Run the script and verify what prints in the terminal:
     - "Correct script input was provided. Please wait while the PDFs you requested are downloaded."
     - "Starting downloads for the next seed: SEED NAME" (for each seed)  
@@ -47,9 +51,9 @@ and verify that the script stops running and the message displayed in the termin
 
 3. Collection error: python PATH/download.py PATH Collection_Error
 
-4. Too many arguments: python PATH/download.py PATH Business Error   
+4. Too many arguments: python PATH/download.py PATH Business Extra_Error   
 
-5. Mix of errors: python PATH/download.py C:/path/error Collection_Error Error
+5. Mix of errors: python PATH/download.py C:/path/error Collection_Error Extra_Error
 
 
 ### download_seed()
