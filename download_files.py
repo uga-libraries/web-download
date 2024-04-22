@@ -95,6 +95,22 @@ def get_download_urls():
     return download_urls_dict
 
 
+def log(row_list):
+    """Add a row of data to the log, which is in the input_directory, or makes the log if it doesn't exist"""
+
+    # Makes a new log and adds a header row.
+    if row_list == 'header':
+        with open('download_log.csv', 'w', newline='') as l:
+            l_write = csv.writer(l)
+            l_write.writerow(['Seed', 'Expected PDFs', 'Actual PDFs', 'Correct Amount Downloaded?', 'Errors'])
+
+    # Adds a new row of data to an existing log.
+    else:
+        with open('download_log.csv', 'a', newline='') as l:
+            l_write = csv.writer(l)
+            l_write.writerow(row_list)
+
+
 if __name__ == '__main__':
 
     # Verifies the provided script argument(s) are correct and assigns them to variables.
@@ -114,7 +130,9 @@ if __name__ == '__main__':
     # Gets a dictionary of the PDF URLs from each CSV in the input folder that will be downloaded.
     # If no URLs were located, prints that the script has completed and quits the script.
     to_download = get_download_urls()
-    print(to_download)
     if to_download == {}:
         print('\nNo URLs were found to be downloaded. Script will end.')
         sys.exit(1)
+
+    # Makes a log to save the result of each seed download.
+    log('header')
