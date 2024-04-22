@@ -16,6 +16,7 @@ Returns:
 import csv
 import os
 import re
+import subprocess
 import sys
 
 
@@ -52,7 +53,7 @@ def check_arguments(arg_list):
     return folder, collection, errors
 
 
-def download_seed(seed_name, urls):
+def download_seed(seed_name, urls, collection):
     """Download the publication at each url and save to a folder with the seed name"""
 
     # Prints the script's progress.
@@ -68,6 +69,18 @@ def download_seed(seed_name, urls):
         log([seed, 'n/a', 'n/a', 'n/a', 'Could not make the seed folder: unpermitted character(s).'])
         return
 
+    # Starts a dictionary of downloaded PDFs to add sequential numbers to duplicate names within this seed
+    # and a variable to track if there are download errors for later logging.
+    downloads = {}
+    download_error = False
+
+    # Saves each PDF to the seed folder.
+    for url in urls:
+
+        # Constructs the desired name for the file.
+        # Also returns an updated version of downloads that includes the file.
+        filename, downloads = get_file_name(url, downloads)
+        
 
 def get_download_urls():
     """Get the PDF URLs from each CSV in the input folder and save them to a dictionary.
@@ -111,6 +124,63 @@ def get_download_urls():
                     download_urls_dict[seed] = [url]
 
     return download_urls_dict
+
+
+def get_file_name(file_url, downloads_dict):
+    """Construct the file name based on the file URL.
+
+    Parameters:
+        file_url : URL for the PDF to be downloaded
+        downloads_dict : dictionary with all files already downloaded for the seed
+
+    Returns:
+        name : name of the file
+        downloads_dict : updated dictionary of file names with the next sequential number for duplicates
+    """
+
+    # Selects the part of the URL to use for the name. URL parts are the texts divided by the slashes.
+    #   -If the URL doesn't have multiple parts (unlikely), the whole URL is the name.
+    #   -If the last part of the URL is "download", the previous part of the URL is the name.
+    #   -Otherwise, the last part of the URL is the name.
+    if '/' not in file_url:
+        name = file_url
+    elif file_url.endswith('/download'):
+        regex = re.match('.*/(.*)/download', file_url)
+        name = regex.group(1)
+    else:
+        regex = re.match('.*/(.*)', file_url)
+        name = regex.group(1)
+
+    # Adds a ".pdf" file extension, if it doesn't have one.
+    #    - Some extensions are all caps (.PDF)
+    #    - Some have pdf or PDF but not the preceding period
+    #    - Some do not have a file extension
+    # Making all extensions lowercase so case-insensitive systems don't think it is a duplicate.
+    if not name.endswith('.pdf'):
+        if name.endswith('.PDF'):
+            name = name[:-4] + '.pdf'
+        elif name.endswith(('pdf', 'PDF')):
+            name = name[:-3] + '.pdf'
+        else:
+            name = name + '.pdf'
+
+    # Replaces any characters which Windows does not allow in a filename with an underscore.
+    for character in ('/', '\\', '*', '?', '"', '<', '>', '|'):
+        if character in name:
+            name = name.replace(character, '_')
+
+    # Adds a numerical extension to the file name if there is already another file of that name for this seed,
+    # since generic names like report are common for different files,
+    # and updates a dictionary that tracks the next sequential number to use for a file of that name.
+    if name in downloads_dict:
+        number = downloads_dict[name]
+        downloads_dict[name] += 1
+        name = name[:-4] + "_" + str(number) + ".pdf"
+    # If this is the first time the file name is used, the next instance of the name will have an extension of 1.
+    else:
+        downloads_dict[name] = 1
+
+    return name, downloads_dict
 
 
 def log(row_list):
@@ -187,4 +257,4 @@ if __name__ == '__main__':
 
     # Downloads every PDF for each seed.
     for seed, url_list in to_download.items():
-        download_seed(seed, url_list)
+        download_seed(seed, url_list, ait_collection)
