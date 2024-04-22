@@ -13,7 +13,6 @@ At UGA, PDFs are downloaded to provide access to Georgia government publications
 
 ### Dependencies
 
-- [PySimpleGui](https://www.pysimplegui.org/en/latest/) - a Python library for creating user interfaces.
 - [wget](https://www.gnu.org/software/wget/) - for downloading content using a URL. 
 
 ### Installation
@@ -37,13 +36,24 @@ as well as a list of all Archive-It collections for UGA.
 To use this script for other formats, update how missing file extensions are assigned in get_file_name().
 
 ### Script Arguments
+* input_folder (required): Folder with CSVs from Archive-It with the files to be downloaded.
+* ait_collection (optional): Title of the Archive-It collection that the files are part of, 
+  if not Georgia Government Publications (the default value for ait_collection)
 
-In a terminal window, type ```python path/download_files.py```,
-where "path" is the location of the download_files.py file on your computer.
+Put quotes around either script argument if it has spaces
 
-This will open a GUI (graphical user interface) for users to enter two points of information:
-* Folder with CSVs from Archive-It with the files to be downloaded.
-* Title of the Archive-It collection that the files are part of.
+Example for GGP collection:  
+python C:/user/scripts/download_files.py "C:/user/GGP CSVs"
+
+Example for Activists and Advocates collection:  
+python C:/user/scripts/download_files.py C:/user/csv "Activist and Advocates"
+
+Terminal Tips:
+
+* Drag a file or folder onto the terminal window to make its path appear.
+* Put quotes around any paths that have spaces.
+* Make sure there is a space between each component of the command.
+* Use the up arrow key to see earlier commands you typed, e.g., if you need to fix a typo or run something again.
 
 ### Testing
 
