@@ -60,3 +60,7 @@ if __name__ == '__main__':
         for error in errors_list:
             print(f'  * {error}')
         sys.exit(1)
+
+    # Notification that the script is starting.
+    print('\nCorrect script input was provided.')
+    print('Please wait while the PDFs you requested are downloaded.')
