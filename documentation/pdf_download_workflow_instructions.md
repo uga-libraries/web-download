@@ -13,13 +13,10 @@ The script downloads PDFs from Archive-It crawls.
 The PDFs are saved to folders named with the website URL (modified to remove illegal characters),
 and the PDFs are named with the last portion of their URL.
 It will not download multiple copies of a PDF if Archive-It detects it is a duplicate.
-It will download multiple PDFs if just the name is the same (e.g., report, minutes), and add a sequential number starting with 2.
+It will download multiple PDFs if just the name is the same (e.g., report, minutes), and add a sequential number starting with 1.
 
 The script will always create a log (download_log.csv) to document the process
 and will also create an error log (error_log.csv) if there are any errors.
-
-The script opens a simple GUI for entering the required input and displaying the progress of the script,
-since it is used by individuals that do not regularly work with Python scripts.
 
 ## Responsibility
 
@@ -43,41 +40,36 @@ The Head of Digital Stewardship maintains and improves the script at the request
    
 
 3. Save all the CSVs to a single folder. 
-   They must all be from the same Archive-It collection but can be from many websites.
+   They must all be from the same Archive-It collection but can be from many websites (seeds).
    There should not be anything but the File Type CSVs in the folder.
    
 
 4. Review the CSVs and delete the rows for any PDFs you do not wish to download.
    
 
-5. If the Archive-It collection for these PDFs is not "Georgia Government Publications",
-   verify the collection is in ait_collections.py file and update the default collection if desired.
+5. Start the script by opening a terminal window and typing:
+    
+       python PATH/download_files.py PATH/CSVS
+
+   * In place of "PATH", put the absolute path to that file or folder on your computer.
+   * In place of "CSVS", put the name of the folder with Archive-It PDF File Type CSVs.
+   * If the Archive-It collection is not "Georgia Government Publications", type the collection name after PATH/CSVS
+
    
-
-6. Start the script by opening a terminal window and typing: "python path/download_files.py", 
-   where path is the location of the download_files.py file on your computer.
+6. The script checks PATH/CSVS and the optional collection and shows the result in the terminal.
    
+   a. If everything is correct, you'll see "Correct script input was provided..." and the download will begin.
 
-7. A window (the script GUI) will open. Provide the following input:
-   
-   a. The path to the folder with the CSVs created in step 3. 
-      This is also where the downloaded PDFs will be saved.
-   
-   b. The Archive-It collection that the CSVs are from (usually Georgia Government Publications).
+   b. If there is an error, you'll see a description of the issue and the script will stop. 
+      Start the script again with the correct information, using guidance in step 5.
 
 
-8. If there are any issues with the provided input, a message will appear in the GUI and you can try again. 
-   Otherwise, the GUI will show "Please wait while the PDFs you requested are downloaded..."
+7. The script download progress (when it starts downloads for each website/seed) is displayed in the terminal.
+   When it is done, it will show "Downloading is complete..."
 
 
-9. The script download progress (each seed) is displayed in the GUI.
-   When it is done, it will show "Downloading is complete."
+8. Review the Download Log and Error Log (if created) for any problems with the download.
+   These logs, and the downloaded files, are in the PATH/CSVS folder.
 
 
-10. Use the GUI to start another download or close the window to end the script.
-
-
-11. Review the Download Log and Error Log (if created) for any problems with the download.
-
-
-12. Continue with MAGIL's established workflow to evaluate PDFs and transfer them to the DLG.
+9. Continue with MAGIL's established workflow to evaluate PDFs and transfer them to the DLG.
