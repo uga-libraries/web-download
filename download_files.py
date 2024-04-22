@@ -90,6 +90,42 @@ def download_seed(seed_name, urls, collection):
         download_result = subprocess.run(f'wget -O "{download_path}" "{ait_url}"',
                                          shell=True, stderr=subprocess.PIPE)
 
+        # Checks the result of downloading (the return code).
+        # If there were no errors (code 0), verifies the expected size was downloaded.
+        # If there was an error, saves the error to a separate error log.
+        if download_result.returncode == 0:
+            regex = re.match('.*saved \\[([0-9]+)/([0-9]+)]', str(download_result.stderr))
+            try:
+                if not regex.group(1) == regex.group(2):
+                    error_log('Size downloaded is wrong', download_result)
+                    download_error = True
+            except AttributeError:
+                error_log('Cannot calculate size downloaded', download_result)
+                download_error = True
+        else:
+            error_log('Error when downloading', download_result)
+            download_error = True
+
+
+def error_log(message, output):
+    """Make an error log, if one doesn't already exist, and add the data for this error to it.
+
+     Parameters:
+        message : standard text to include in the log about the error
+        output : output from wget, which generated the error
+    """
+
+    # If the error log does not exist, makes one with a header row.
+    if not os.path.exists('error_log.csv'):
+        with open('error_log.csv', 'w', newline='') as l:
+            l_write = csv.writer(l)
+            l_write.writerow(['Error', 'WGET Command', 'Return Code', 'STDERR'])
+
+    # Adds the error to the log.
+    with open('error_log.csv', 'a', newline='') as l:
+        l_write = csv.writer(l)
+        l_write.writerow([message, output.args, output.returncode, output.stderr.decode('utf-8')])
+
 
 def get_download_urls():
     """Get the PDF URLs from each CSV in the input folder and save them to a dictionary.
