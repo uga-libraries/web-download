@@ -106,6 +106,24 @@ def download_seed(seed_name, urls, collection):
             error_log('Error when downloading', download_result)
             download_error = True
 
+    # Verifies the number of downloaded PDFs matches the expected number of PDFs for that seed.
+    files_in_dictionary = len(to_download[seed])
+    files_in_folder = len(os.listdir(os.path.join(os.getcwd(), seed_folder_name)))
+
+    # Creates language needed for the download log.
+    if files_in_dictionary == files_in_folder:
+        file_match = 'No errors found'
+    else:
+        file_match = 'Errors found'
+
+    if download_error:
+        seed_error = 'Download errors found'
+    else:
+        seed_error = 'No download errors found'
+
+    # Saves results for this seed to the download log.
+    log([seed, files_in_dictionary, files_in_folder, file_match, seed_error])
+
 
 def error_log(message, output):
     """Make an error log, if one doesn't already exist, and add the data for this error to it.
