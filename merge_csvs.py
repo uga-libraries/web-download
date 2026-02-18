@@ -10,12 +10,23 @@ import pandas as pd
 import sys
 
 
+def csvs_to_df(csv_dir):
+    """Return df with contents of all csvs in the csv_directory"""
+    df_list = []
+    for filename in os.listdir(csv_dir):
+        df = pd.read_csv(os.path.join(csv_dir, filename))
+        df_list.append(df)
+    df_combined = pd.concat(df_list, axis=0, ignore_index=True)
+    return df_combined
+
+
 if __name__ == '__main__':
 
     # Assigns the script argument to a variable.
     csv_directory = sys.argv[1]
 
     # Combines all CSVs in the directory into a single dataframe.
+    csv_df = csvs_to_df(csv_directory)
 
     # Removes rows that do not need to be reviewed.
 
