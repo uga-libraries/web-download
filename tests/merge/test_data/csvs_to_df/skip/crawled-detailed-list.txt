@@ -1,0 +1,2 @@
+url,size,is_duplicate,seed
+This is a craweld-detailed-list but not a CSV and will be skipped.
