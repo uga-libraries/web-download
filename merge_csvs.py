@@ -14,8 +14,11 @@ def csvs_to_df(csv_dir):
     """Return df with contents of all csvs in the csv_directory"""
     df_list = []
     for filename in os.listdir(csv_dir):
-        df = pd.read_csv(os.path.join(csv_dir, filename))
-        df_list.append(df)
+        if filename.startswith('crawled-detailed-list') and filename.endswith('.csv'):
+            df = pd.read_csv(os.path.join(csv_dir, filename))
+            df_list.append(df)
+        else:
+            print('Filename does not match expected naming convention and was skipped:', filename)
     df_combined = pd.concat(df_list, axis=0, ignore_index=True)
     return df_combined
 
