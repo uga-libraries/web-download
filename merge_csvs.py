@@ -23,6 +23,14 @@ def csvs_to_df(csv_dir):
     return df_combined
 
 
+def df_review(df):
+    """Return an updated df with only the rows needed for review"""
+
+    # Remove rows Archive-It flagged as a duplicate.
+
+    # Remove rows based on keywords in the url
+
+
 if __name__ == '__main__':
 
     # Assigns the script argument to a variable.
@@ -32,6 +40,7 @@ if __name__ == '__main__':
     csv_df = csvs_to_df(csv_directory)
 
     # Removes rows that do not need to be reviewed.
+    csv_df = df_review(csv_df)
 
     # Saves the combined CSV to the csv_directory.
 
