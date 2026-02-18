@@ -43,4 +43,5 @@ if __name__ == '__main__':
     csv_df = df_review(csv_df)
 
     # Saves the combined CSV to the csv_directory.
+    csv_df.to_csv(os.path.join(csv_directory, 'GGP_PDF_URLS.csv'), index=False)
 
