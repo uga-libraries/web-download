@@ -46,6 +46,7 @@ def csvs_to_df(csv_dir):
     """
     df_list = []
     for filename in os.listdir(csv_dir):
+        # Verify filename follows Archive-It naming convention, and print if not so the error can be checked.
         if filename.startswith('crawled-detailed-list') and filename.endswith('.csv'):
             df = pd.read_csv(os.path.join(csv_dir, filename))
             df_list.append(df)
@@ -79,19 +80,20 @@ def df_review(df):
 
 if __name__ == '__main__':
 
-    # Assigns the script argument to a variable, and quits the script if there is an error.
+    # Assigns the script argument to a variable, and quits the script if there is an error with the argument.
     csv_directory, error = check_argument(sys.argv)
     if error:
         print(error)
         sys.exit(1)
 
-    # Combines all CSVs in the directory into a single dataframe.
+    # Combines all rows from all Archive-It CSVs in the directory into a single dataframe.
     csv_df = csvs_to_df(csv_directory)
 
     # Removes rows that do not need to be reviewed.
     csv_df = df_review(csv_df)
 
-    # Saves the combined CSV to the csv_directory, as long as df_review has some content.
+    # Saves the rows to be reviewed to a CSV in the csv_directory, as long as df_review has some content.
+    # If not, prints a message to show the CSV was not made intentionally, as opposed to a script error.
     if len(csv_df.index) > 0:
         csv_df.to_csv(os.path.join(csv_directory, f'{date.today().strftime("%Y")}_GGP_PDF_URLS.csv'), index=False)
     else:
