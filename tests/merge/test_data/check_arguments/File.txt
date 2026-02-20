@@ -1,0 +1,1 @@
+File for generating an error for a path that exists but is not a directory.
