@@ -16,6 +16,7 @@ Returns:
 """
 import csv
 import os
+import pandas as pd
 import re
 import subprocess
 import sys
@@ -146,50 +147,6 @@ def error_log(message, output):
         l_write.writerow([message, output.args, output.returncode, output.stderr.decode('utf-8')])
 
 
-def get_download_urls():
-    """Get the PDF URLs from each CSV in the input folder and save them to a dictionary.
-
-    Returns:
-        A dictionary with seed (website) as the key and a list of PDF URLs for each seed as the value.
-    """
-
-    # Makes a dictionary for the results.
-    download_urls_dict = {}
-
-    # Finds and reads every CSV in the input directory.
-    for input_csv in os.listdir('.'):
-
-        # Skips files that aren't CSVs and skips folders.
-        if not input_csv.endswith('.csv') or os.path.isdir(input_csv):
-            continue
-
-        # Reads the CSV.
-        with open(input_csv) as csvfile:
-            data = csv.reader(csvfile)
-
-            # Verifies the header has the expected values.
-            # If not, prints an error and starts the next CSV.
-            header = next(data)
-            if not header == ['url', 'size', 'is_duplicate', 'seed']:
-                print("This CSV is not formatted correctly and will be skipped:", input_csv)
-                continue
-
-            # Updates the download urls dictionary with data about each PDF URL.
-            for row in data:
-                url, size, is_duplicate, seed = row
-                # Does not add the PDF URL to the dictionary if it is a duplicate (value of 1).
-                if is_duplicate == '1':
-                    continue
-                # Adds the PDF URL if the seed is already in the dictionary.
-                if seed in download_urls_dict:
-                    download_urls_dict[seed].append(url)
-                # Adds the seed URL and PDF URL to the dictionary if the seed isn't already present.
-                else:
-                    download_urls_dict[seed] = [url]
-
-    return download_urls_dict
-
-
 def get_file_name(file_url, downloads_dict):
     """Construct the file name based on the file URL.
 
@@ -312,18 +269,14 @@ if __name__ == '__main__':
     print('\nCorrect script input was provided.')
     print('Please wait while the PDFs you requested are downloaded.\n')
 
-    # Gets a dictionary of the PDF URLs from each CSV in the input folder that will be downloaded.
-    # If no URLs were located, prints that the script has completed and quits the script.
-    to_download = get_download_urls()
-    if to_download == {}:
-        print('\nNo URLs were found to be downloaded. Script will end.')
-        sys.exit(1)
-
     # Makes a log to save the result of each seed download.
     log('header')
 
-    # Downloads every PDF for each seed.
-    for seed, url_list in to_download.items():
+    # Reads the information in url_csv and downloads every PDF for each seed.
+    url_df = pd.read_csv(url_csv_path)
+    seed_list = url_df['seed'].unique().tolist()
+    for seed in seed_list:
+        url_list = url_df[url_df['seed'] == seed]['url'].tolist()
         download_seed(seed, url_list, ait_collection)
 
     # Notification that the script is complete.
