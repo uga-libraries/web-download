@@ -1,3 +1,4 @@
+"""Tests for the entire script"""
 from datetime import date
 import os
 import pandas as pd
@@ -19,7 +20,11 @@ class MyTestCase(unittest.TestCase):
         # Makes the variables for input and runs the script.
         script_path = os.path.join(os.getcwd(), '..', '..', 'merge_csvs.py')
         csvs_dir = os.path.join(os.path.join(os.getcwd(), 'test_data', 'merge_csvs_py', 'normal'))
-        subprocess.run(f'python {script_path} {csvs_dir}', shell=True)
+        printed = subprocess.run(f'python {script_path} {csvs_dir}', shell=True, capture_output=True, text=True)
+
+        # Verifies the printed statement.
+        expected = 'Filename does not match expected naming convention and was skipped: to_skip.txt\n'
+        self.assertEqual(expected, printed.stdout, "Problem with test for normal, printed statement")
 
         # Verifies the contents of the GGP_PDF_URLS.csv produced by the script.
         csv_df = pd.read_csv(os.path.join(csvs_dir, f'{date.today().strftime("%Y")}_GGP_PDF_URLS.csv'), dtype=str)
@@ -31,7 +36,7 @@ class MyTestCase(unittest.TestCase):
                     ['https://seed2.gov/doc/parent-resource', '172702', '0', 'https://seed2.gov/'],
                     ['https://seed3.gov/doc/2024-board-app', '218285', '0', 'https://seed3.gov/'],
                     ['https://seed3.gov/doc/2025-board-app', '218284', '0', 'https://seed3.gov/']]
-        self.assertEqual(expected, result, "Problem with test for normal")
+        self.assertEqual(expected, result, "Problem with test for normal, csv")
 
     def test_error(self):
         """Test for when the required argument is missing and the script quits."""
