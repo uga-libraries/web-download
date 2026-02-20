@@ -5,6 +5,7 @@ Parameters
 Returns
 
 """
+from datetime import date
 import os
 import pandas as pd
 import sys
@@ -65,6 +66,8 @@ if __name__ == '__main__':
     # Removes rows that do not need to be reviewed.
     csv_df = df_review(csv_df)
 
-    # Saves the combined CSV to the csv_directory.
-    csv_df.to_csv(os.path.join(csv_directory, 'GGP_PDF_URLS.csv'), index=False)
-
+    # Saves the combined CSV to the csv_directory, as long as df_review has some content.
+    if len(csv_df.index) > 0:
+        csv_df.to_csv(os.path.join(csv_directory, f'{date.today().strftime("%Y")}_GGP_PDF_URLS.csv'), index=False)
+    else:
+        print("None of the csvs contain rows that require review.")
