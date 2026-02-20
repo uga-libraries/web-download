@@ -47,7 +47,7 @@ def csvs_to_df(csv_dir):
     df_list = []
     for filename in os.listdir(csv_dir):
         # Verify filename follows Archive-It naming convention, and print if not so the error can be checked.
-        if filename.startswith('crawled-detailed-list') and filename.endswith('.csv'):
+        if filename.startswith('crawled-detail-list') and filename.endswith('.csv'):
             df = pd.read_csv(os.path.join(csv_dir, filename))
             df_list.append(df)
         else:
