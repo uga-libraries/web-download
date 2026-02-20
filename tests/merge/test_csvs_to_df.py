@@ -15,7 +15,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_multiple(self):
         """Test for when there are multiple correct PDF reports"""
-        df = csvs_to_df(os.path.join('merge', 'test_data', 'csvs_to_df', 'multiple'))
+        df = csvs_to_df(os.path.join(os.getcwd(), 'test_data', 'csvs_to_df', 'multiple'))
         result = df_to_list(df)
         expected = [['url', 'size', 'is_duplicate', 'seed'],
                     ['https://seed1.gov/doc/4112023-agenda', '172900', '0', 'https://seed1.gov/'],
@@ -35,7 +35,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_one(self):
         """Test for when there is one correct PDF report"""
-        df = csvs_to_df(os.path.join('merge', 'test_data', 'csvs_to_df', 'one'))
+        df = csvs_to_df(os.path.join(os.getcwd(), 'test_data', 'csvs_to_df', 'one'))
         result = df_to_list(df)
         expected = [['url', 'size', 'is_duplicate', 'seed'],
                     ['https://seed.gov/download/pdf/2023-board-application', '101', '0', 'https://seed.gov/'],
@@ -46,7 +46,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_skip(self):
         """Test for when there are two correct PDF reports and three files to skip"""
-        df = csvs_to_df(os.path.join('merge', 'test_data', 'csvs_to_df', 'skip'))
+        df = csvs_to_df(os.path.join(os.getcwd(), 'test_data', 'csvs_to_df', 'skip'))
         result = df_to_list(df)
         expected = [['url', 'size', 'is_duplicate', 'seed'],
                     ['https://seed1.gov/doc/4112023-agenda', '172900', '0', 'https://seed1.gov/'],
