@@ -4,7 +4,7 @@ At UGA, this script is used by MAGIL to provide access to Georgia Government Pub
 via the Digital Library of Georgia.
 
 Parameters:
-    url_csv (required): path to the file with PDF URls to download, made with merge_csvs.py
+    url_csv_path (required): path to the file with PDF URls to download, made with merge_csvs.py
     ait_collection (optional): Archive-It collection the websites are part of (all must be in the same one),
                                if not the default Georgia Government Publications
 
@@ -109,11 +109,11 @@ def download_seed(seed_name, urls, collection):
             download_error = True
 
     # Verifies the number of downloaded PDFs matches the expected number of PDFs for that seed.
-    files_in_dictionary = len(to_download[seed])
+    files_expected = len(urls)
     files_in_folder = len(os.listdir(os.path.join(os.getcwd(), seed_folder_name)))
 
     # Creates language needed for the download log.
-    if files_in_dictionary == files_in_folder:
+    if files_expected == files_in_folder:
         file_match = 'No errors found'
     else:
         file_match = 'Errors found'
@@ -124,7 +124,7 @@ def download_seed(seed_name, urls, collection):
         seed_error = 'No download errors found'
 
     # Saves results for this seed to the download log.
-    log([seed, files_in_dictionary, files_in_folder, file_match, seed_error])
+    log([seed, files_expected, files_in_folder, file_match, seed_error])
 
 
 def error_log(message, output):
