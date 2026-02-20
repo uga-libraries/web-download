@@ -12,6 +12,7 @@ Returns:
     One folder for each website (seed), with the PDFs from that seed.
     A download_log.csv file with if the correct number of PDFs were downloaded and a summary of any other error.
     An error_log.csv file with details about each wget error, if there were any errors.
+    Everything is saved to the same folder as url_csv.
 """
 import csv
 import os
@@ -302,7 +303,10 @@ if __name__ == '__main__':
         for error in errors_list:
             print(f'  * {error}')
         sys.exit(1)
-    os.chdir(url_csv)
+
+    # Changes the current directory to the folder that url_csv is in, which is where script output is saved.
+    output_folder = os.path.dirname(url_csv_path)
+    os.chdir(output_folder)
 
     # Notification that the script is starting.
     print('\nCorrect script input was provided.')
