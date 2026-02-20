@@ -4,7 +4,7 @@ At UGA, this script is used by MAGIL to provide access to Georgia Government Pub
 via the Digital Library of Georgia.
 
 Parameters:
-    input_folder (required): path to the folder with Archive-It CSVs files listing the PDF URls
+    url_csv (required): path to the file with PDF URls to download, made with merge_csvs.py
     ait_collection (optional): Archive-It collection the websites are part of (all must be in the same one),
                                if not the default Georgia Government Publications
 
@@ -22,19 +22,19 @@ import sys
 
 def check_arguments(arg_list):
     
-    folder = None
+    url_csv = None
     collection = '15678'
     errors = []
     
     # No arguments provided; just has the script path.
     if len(arg_list) == 1:
-        errors.append('Missing required argument input_folder')
-    # The required input_folder argument is present.
+        errors.append('Missing required argument url_csv')
+    # The required url_csv argument is present.
     if len(arg_list) > 1:
         if os.path.exists(arg_list[1]):
-            folder = arg_list[1]
+            url_csv = arg_list[1]
         else:
-            errors.append(f'Folder with CSVS path "{arg_list[1]}" is not correct')
+            errors.append(f'Path to URL CSV "{arg_list[1]}" is not correct')
     # The optional ait_collection is present.
     if len(arg_list) > 2:
         ait_coll_dict = {"Activists and Advocates": "12263",  "Business": "12939",
@@ -48,9 +48,9 @@ def check_arguments(arg_list):
             collection = ait_coll_dict[arg_list[2]]
     # Too many arguments are present.
     if len(arg_list) > 3:
-        errors.append('Too many arguments. Maximum is input_folder (required) and ait_collection (optional).')
+        errors.append('Too many arguments. Maximum is url_csv (required) and ait_collection (optional).')
     
-    return folder, collection, errors
+    return url_csv, collection, errors
 
 
 def download_seed(seed_name, urls, collection):
@@ -296,13 +296,13 @@ if __name__ == '__main__':
 
     # Verifies the provided script argument(s) are correct and assigns them to variables.
     # If there are errors, prints the errors and exits the script.
-    input_folder, ait_collection, errors_list = check_arguments(sys.argv)
+    url_csv_path, ait_collection, errors_list = check_arguments(sys.argv)
     if len(errors_list) > 0:
         print('Please correct the following and run the script again:')
         for error in errors_list:
             print(f'  * {error}')
         sys.exit(1)
-    os.chdir(input_folder)
+    os.chdir(url_csv)
 
     # Notification that the script is starting.
     print('\nCorrect script input was provided.')
