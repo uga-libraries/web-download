@@ -17,9 +17,15 @@ import sys
 
 
 def check_argument(arg_list):
-    """Verify the required script argument is present and a valid directory"""
+    """Verify the required script argument is present and a valid directory
 
-    # Argument is missing if arg_list just has the script path.
+    Parameters:
+    arg_list (list): output of sys.argv after starting the script
+
+    Returns:
+    csv_directory (path as string, None): path to csv_directory if in arg_list, or None if error
+    error (string, None): error message, or None if no error
+    """
     if len(arg_list) == 1:
         return None, 'Missing required argument, path to csv_directory.'
     else:
@@ -30,7 +36,14 @@ def check_argument(arg_list):
 
 
 def csvs_to_df(csv_dir):
-    """Return df with contents of all csvs in the csv_directory"""
+    """Combine all rows of all csvs in the csv_directory to one dataframe
+
+    Parameters:
+    csv_dir (path as string): path to folder with Archive-It csvs (script argument)
+
+    Returns:
+    df_combined (pandas df): df with all rows of all csvs in the csv_directory
+    """
     df_list = []
     for filename in os.listdir(csv_dir):
         if filename.startswith('crawled-detailed-list') and filename.endswith('.csv'):
@@ -43,7 +56,14 @@ def csvs_to_df(csv_dir):
 
 
 def df_review(df):
-    """Return an updated df with only the rows needed for review"""
+    """Remove rows that don't need to be reviewed for if they are publications from the df
+
+    Parameters
+    df (pandas dataframe): df with all rows of all csvs in the csv_directory
+
+    Returns
+    df (pandas dataframe): updated version of df with only the rows needed for review
+    """
 
     # Remove rows Archive-It flagged as a duplicate.
     df = df[df['is_duplicate'] != 1]
