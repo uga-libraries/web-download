@@ -40,8 +40,11 @@ def df_review(df):
     """Return an updated df with only the rows needed for review"""
 
     # Remove rows Archive-It flagged as a duplicate.
+    df = df[df['is_duplicate'] != 1]
 
     # Remove rows based on keywords in the url
+
+    return df
 
 
 if __name__ == '__main__':
