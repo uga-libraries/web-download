@@ -1,9 +1,14 @@
 """Combine multiple Archive-It crawl reports for the PDF format, with cleanup, to review for download_files.py
 
-Parameters
+Cleanup removes rows that Archive-It labeled as a duplicate
+and where the URL contains keywords that indicate it is not a publication.
+
+Parameter
+csv_directory: path to the folder containing Archive-It File Type reports for application/pdf
 
 Returns
-
+YYYY_GGP_PDF_URLS.csv saved to the csv_directory,
+which combining all rows from all the csvs that require review for if they are publications
 """
 from datetime import date
 import os
