@@ -42,7 +42,11 @@ def df_review(df):
     # Remove rows Archive-It flagged as a duplicate.
     df = df[df['is_duplicate'] != 1]
 
-    # Remove rows based on keywords in the url
+    # Remove rows based on keywords in the url.
+    keywords_list = ['agenda', 'memo', 'minutes', 'powerpoint']
+    keywords = '|'.join(keywords_list)
+    remove = df['url'].str.contains(keywords, case=False, na=False)
+    df = df[~remove]
 
     return df
 
